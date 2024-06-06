@@ -1,6 +1,6 @@
 {
   "name": "@openmrs/esm-message-app",
-  "version": "7.0.0",
+  "version": "1.0.0",
   "description": "CFL Messaging microfrontend for the OpenMRS SPA",
   "browser": "dist/openmrs-esm-messages-app.js",
   "main": "src/index.ts",
