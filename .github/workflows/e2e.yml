@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  main:
+  run_e2e_tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -22,7 +22,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: 18
 
       - name: Cache dependencies
         id: cache
@@ -39,7 +39,7 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: Build apps
-        run: yarn turbo build --concurrency=5
+        run: yarn turbo run build --color --concurrency=5
 
       - name: Run dev server
         run: bash e2e/support/github/run-e2e-docker-env.sh
@@ -51,13 +51,29 @@ jobs:
         run: yarn test-e2e
 
       - name: Stop dev server
-        if: "!cancelled()"
+        if: '!cancelled()'
         run: docker stop $(docker ps -a -q)
 
       - name: Upload report
-        uses: actions/upload-artifact@v3
-        if: always()
+        uses: actions/upload-artifact@v4
+        if: '!cancelled()'
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+          overwrite: true
+
+      - name: Capture Server Logs
+        if: '!cancelled()'
+        uses: jwalton/gh-docker-logs@v2
+        with:
+          dest: './logs'
+
+      - name: Upload Logs as Artifact
+        uses: actions/upload-artifact@v4
+        if: '!cancelled()'
+        with:
+          name: server-logs
+          path: './logs'
+          retention-days: 2
+          overwrite: true
