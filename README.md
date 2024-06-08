@@ -8,5 +8,5 @@
 
 ```sh
 yarn  # to install dependencies
-yarn start  # to run the dev server
+yarn start --sources 'packages/esm-sms-app' # to run a specific application
 ```
