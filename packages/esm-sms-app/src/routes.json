@@ -8,8 +8,40 @@
       "slot": "system-admin-page-card-link-slot",
       "online": true,
       "offline": true
+    },
+    {
+      "name": "add-provider-config-form",
+      "component": "addProviderConfigForm",
+      "slot": "add-provider-config-form-slot",
+      "online": true,
+      "offline": true
+    },
+    {
+      "name": "test-provider-config-form",
+      "component": "testProviderConfigForm",
+      "slot": "test-provider-config-form-slot",
+      "online": true,
+      "offline": true
     }
   ],
-  "pages": [],
-  "workspaces": []
+  "pages": [
+    {
+      "component": "providersDashboard",
+      "route": "provider-settings",
+      "online": true,
+      "offline": true,
+      "order": 1
+    }
+  ],
+  "modals": [
+    {
+    "name": "config-upload-modal",
+    "component": "fileUploadModal"
+
+  },
+  {
+    "name": "remove-config-prompt-modal",
+    "component": "removeProviderConfigPrompt"
+  }
+]
 }
