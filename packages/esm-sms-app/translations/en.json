@@ -11,6 +11,7 @@
   "configSaved": "Configuration saved",
   "configuration": "Configuration",
   "configurations": "Configurations",
+  "default": "Default",
   "deleteModalConfirmationText": "Are you sure you want to delete this configuration?",
   "discard": "Discard",
   "edit": "Edit",

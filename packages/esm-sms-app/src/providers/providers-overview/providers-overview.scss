@@ -26,6 +26,12 @@
   margin-bottom: 0.5rem;
 }
 
+.tag {
+  :global(.cds--tag) {
+    min-height: unset;
+  }
+}
+
 .tableContainer {
   padding: 0;
 

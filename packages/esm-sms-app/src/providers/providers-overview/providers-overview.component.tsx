@@ -19,7 +19,7 @@ import {
   TableExpandHeader,
   Tile,
 } from '@carbon/react';
-import { Add, Edit, TrashCan, Chemistry, Export } from '@carbon/react/icons';
+import { Add } from '@carbon/react/icons';
 import styles from './providers-overview.scss';
 import {
   useConfig,
@@ -35,9 +35,9 @@ import { TableExpandRow } from '@carbon/react';
 import { TableExpandedRow } from '@carbon/react';
 import { launchOverlay } from '../../hooks/useOverlay';
 import AddProviderConfigForm from '../add-config-form/provider-config-form.component';
-import { type ProviderConfiguration } from '../../types';
 import { EmptyState } from '../empty-state/empty-state.component';
 import { Tag } from '@carbon/react';
+import classNames from 'classnames';
 
 const ProvidersListTable = () => {
   const { t } = useTranslation();
@@ -145,11 +145,30 @@ const ProvidersListTable = () => {
                       return (
                         <React.Fragment key={row.id}>
                           <TableExpandRow {...getRowProps({ row })}>
-                            {row.cells.map((cell) => (
-                              <>
-                                <TableCell key={cell.id}>{cell.value}</TableCell>
-                              </>
-                            ))}
+                            {row.cells.map((cell, index) => {
+                              return index === 0 ? (
+                                <>
+                                  <TableCell key={cell.id}>
+                                    {cell.value}
+                                    {(() => {
+                                      const config = tableRows.find((r) => `${r.id}:configuration` === row.cells[0].id);
+
+                                      if (config.isDefaultConfig) {
+                                        return (
+                                          <Tag type="green" className={classNames(styles.tag, 'cds--label')}>
+                                            {t('default', 'Default')}
+                                          </Tag>
+                                        );
+                                      }
+                                    })()}
+                                  </TableCell>
+                                </>
+                              ) : (
+                                <>
+                                  <TableCell key={cell.id}>{cell.value}</TableCell>
+                                </>
+                              );
+                            })}
                             <TableCell className="cds--table-column-menu">
                               <ConfigurationsActionMenu
                                 config={tableRows.find((r) => `${r.id}:configuration` === row.cells[0].id)}
