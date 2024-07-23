@@ -129,7 +129,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
   }, [props, setValue]);
 
   return (
-    <Form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+    <Form data-testid="add-provider-form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <Stack gap={2} className={styles.formContainer}>
         <Row className={styles.row}>
           <Column sm={1}>
@@ -143,6 +143,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                 render={({ field, fieldState: { error } }) => (
                   <TextInput
                     {...field}
+                    data-testid="provider-name"
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     labelText={t('nameOfProvider', 'Name of the provider')}
@@ -168,6 +169,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                   render={({ field, fieldState: { error } }) => (
                     <Select
                       {...field}
+                      data-testid="select-template"
                       labelText={t('selectTemplate', 'Select a template')}
                       invalid={!!error?.message}
                       invalidText={error?.message}
@@ -195,6 +197,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                 render={({ field, fieldState: { error } }) => (
                   <NumberInput
                     {...field}
+                    data-testid="numberOfRetries"
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     onChange={(_, { value }) => field.onChange(Number(value))}
@@ -216,6 +219,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <TextInput
+                    data-testid="split-header"
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     {...field}
@@ -238,6 +242,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                 render={({ field, fieldState: { error } }) => (
                   <TextInput
                     {...field}
+                    data-testid="split-footer"
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     labelText={t('footerSplitText', 'Footers split text')}
@@ -255,6 +260,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                 control={control}
                 render={({ field }) => (
                   <Checkbox
+                    data-testid="exclude-last-footer"
                     id={field.name}
                     name={field.name}
                     checked={field.value}
@@ -284,6 +290,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                     render={({ field, fieldState: { error } }) => (
                       <TextArea
                         {...field}
+                        data-testid="auto-script"
                         invalid={!!error?.message}
                         invalidText={error?.message}
                         labelText={t('writeYourScript', 'Write your script')}
@@ -310,6 +317,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                         invalid={!!error?.message}
                         invalidText={error?.message}
                         labelText={dataField}
+                        data-testid={dataField}
                       />
                     )}
                   />
