@@ -16,9 +16,6 @@ import {
   TableRow,
   TableBody,
   TableCell,
-  TableToolbar,
-  TableToolbarContent,
-  TableToolbarSearch,
   Tile,
 } from '@carbon/react';
 import { useConfig, usePagination, useLayoutType, isDesktop as isDesktopLayout } from '@openmrs/esm-framework';

@@ -126,6 +126,7 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
                   invalidText={error?.message}
                   className={styles.radioButtonGroup}
                   orientation="vertical"
+                  data-testid="delivery-time"
                 >
                   {deliveryTimes.map((deliveryTime) => (
                     <RadioButton
@@ -156,6 +157,7 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
                     invalidText={error?.message}
                     labelText={t('multipleRecipientsNotice', 'Separate multiple numbers with comma')}
                     placeholder={t('placeHolder', 'Enter phone +123455690, +09348...')}
+                    data-testid="recipients"
                   />
                 )}
               />
@@ -178,6 +180,7 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
                     invalidText={error?.message}
                     labelText={t('writeTestMessage', 'Write your test message')}
                     placeholder={t('writeTestMessage', 'Write your test message')}
+                    data-testid="test-message"
                   />
                 )}
               />
@@ -201,6 +204,7 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
                           {...field}
                           labelText={t('mapCustomParams', 'Map custom params in key:value format')}
                           placeholder={t('enterCustomParams', 'Enter custom parameters. Use new line as separator')}
+                          data-testid="custom-params"
                         />
                       )}
                     />
