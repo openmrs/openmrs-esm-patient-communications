@@ -22,10 +22,6 @@ jest.mock('../hooks/useProviderConfigTemplates', () => ({
   useProviderConfigTemplates: jest.fn(),
 }));
 
-jest.mock('./providers-overview/providers-overview.component', () => () => <div>ProvidersListTable</div>);
-jest.mock('./sms-logs-table/sms-logs-table.component', () => () => <div>SmslogsTable</div>);
-jest.mock('../workspace/workspace-window.component', () => () => <div>Overlay</div>);
-
 describe('ProvidersDashboard', () => {
   const mockShowModal = showModal as jest.Mock;
   const mockUseOverlay = useOverlay as jest.Mock;
@@ -33,27 +29,24 @@ describe('ProvidersDashboard', () => {
   const mockUseTranslation = useTranslation as jest.Mock;
 
   beforeEach(() => {
-    mockUseTranslation.mockReturnValue({ t: (key: string) => key });
+    mockUseTranslation.mockReturnValue({ t: (_key: string, value: string) => value });
     mockUseOverlay.mockReturnValue({ isOverlayOpen: false });
     mockUseProviderConfigTemplates.mockReturnValue({ mutateTemplates: jest.fn() });
   });
 
   it('renders the component correctly', () => {
     render(<ProvidersDashboard />);
-    expect(screen.getByText('smsProviderSettings')).toBeInTheDocument();
-    expect(screen.getByText('ProvidersListTable')).toBeInTheDocument();
-    expect(screen.getByText('importConfig')).toBeInTheDocument();
+    expect(screen.getByText('SMS Provider Settings')).toBeInTheDocument();
+    expect(screen.getByText('Import config template')).toBeInTheDocument();
   });
 
   it('switches between tabs', () => {
     render(<ProvidersDashboard />);
 
-    // Initially, the Providers tab is displayed
-    expect(screen.getByText('ProvidersListTable')).toBeInTheDocument();
+    expect(screen.getByText('SMS Provider Settings')).toBeInTheDocument();
     expect(screen.queryByText('SmslogsTable')).not.toBeInTheDocument();
 
-    // Switch to Logs tab
-    fireEvent.click(screen.getByText('logs'));
+    fireEvent.click(screen.getByText('Logs'));
     expect(screen.queryByText('ProvidersListTable')).not.toBeInTheDocument();
     expect(screen.getByText('SmslogsTable')).toBeInTheDocument();
   });
