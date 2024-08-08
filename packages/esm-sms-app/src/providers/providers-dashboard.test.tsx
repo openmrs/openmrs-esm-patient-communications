@@ -5,14 +5,19 @@ import { useTranslation } from 'react-i18next';
 import { showModal } from '@openmrs/esm-framework';
 import { useOverlay } from '../hooks/useOverlay';
 import { useProviderConfigTemplates } from '../hooks/useProviderConfigTemplates';
+import { renderWithSwr } from 'tools';
 
 jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  showModal: jest.fn(),
-}));
+jest.mock('@openmrs/esm-framework', () => {
+  const actualModule = jest.requireActual('@openmrs/esm-framework');
+  return {
+    ...actualModule,
+    showModal: jest.fn(),
+  };
+});
 
 jest.mock('../hooks/useOverlay', () => ({
   useOverlay: jest.fn(),
@@ -35,13 +40,15 @@ describe('ProvidersDashboard', () => {
   });
 
   it('renders the component correctly', () => {
-    render(<ProvidersDashboard />);
+    renderProvidersDashboard();
     expect(screen.getByText('SMS Provider Settings')).toBeInTheDocument();
     expect(screen.getByText('Import config template')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Providers' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Logs' })).toBeInTheDocument();
   });
 
   it('switches between tabs', () => {
-    render(<ProvidersDashboard />);
+    renderProvidersDashboard();
 
     expect(screen.getByText('SMS Provider Settings')).toBeInTheDocument();
     expect(screen.queryByText('SmslogsTable')).not.toBeInTheDocument();
@@ -52,9 +59,13 @@ describe('ProvidersDashboard', () => {
   });
 
   it('triggers showConfigUploadModal when the import button is clicked', () => {
-    render(<ProvidersDashboard />);
+    renderProvidersDashboard();
     fireEvent.click(screen.getByText('importConfig'));
 
     expect(mockShowModal).toHaveBeenCalledWith('config-upload-modal', expect.any(Object));
   });
 });
+
+function renderProvidersDashboard() {
+  return renderWithSwr(<ProvidersDashboard />);
+}
