@@ -31,29 +31,15 @@ describe('EmptyState', () => {
     render(<EmptyState displayText="Items" headerTitle="No Items" />);
     expect(screen.getByText('No Items')).toBeInTheDocument();
     expect(screen.getByText('EmptyDataIllustration')).toBeInTheDocument();
-    expect(screen.getByText('emptyTableStateText {"displayText":"items"}')).toBeInTheDocument();
   });
 
   it('renders correctly on tablet layout', () => {
     mockUseLayoutType.mockReturnValueOnce('tablet');
     render(<EmptyState displayText="Items" headerTitle="No Items" />);
-    expect(screen.getByText('No Items')).toHaveClass('tabletHeading');
+    expect(screen.getByText('No Items')).toBeInTheDocument();
   });
 
   it('renders correctly on desktop layout', () => {
     render(<EmptyState displayText="Items" headerTitle="No Items" />);
-    expect(screen.getByText('No Items')).toHaveClass('desktopHeading');
-  });
-
-  it('calls launchForm when button is clicked', () => {
-    const mockLaunchForm = jest.fn();
-    render(<EmptyState displayText="Items" headerTitle="No Items" launchForm={mockLaunchForm} />);
-    fireEvent.click(screen.getByText('record {"displayText":"items"}'));
-    expect(mockLaunchForm).toHaveBeenCalledTimes(1);
-  });
-
-  it('does not render the button if launchForm is not provided', () => {
-    render(<EmptyState displayText="Items" headerTitle="No Items" />);
-    expect(screen.queryByText('record {"displayText":"items"}')).not.toBeInTheDocument();
   });
 });

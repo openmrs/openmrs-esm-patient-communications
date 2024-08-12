@@ -1,7 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { useForm, Controller } from 'react-hook-form';
 import { renderWithSwr } from 'tools';
 import AddProviderConfigForm from './provider-config-form.component';
 import { openmrsFetch, showSnackbar } from '@openmrs/esm-framework';

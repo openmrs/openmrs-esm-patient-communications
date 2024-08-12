@@ -17,14 +17,11 @@ export function useLogsRecords() {
   >(getKey, openmrsFetch);
 
   const smsLogs: SMSLog[] = data ? [].concat(...data.map((page) => page.data.rows)) : [];
-  // const isLoading = !data && !error;
-  // const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
   const isReachingEnd = data && data[data.length - 1]?.data?.rows.length < configurationPageSize;
 
   return {
     smsLogs,
     isLoadingLogs: isLoading,
-    // isLoadingMore,
     isValidatingLogs: isValidating,
     mutateLogs: mutate,
     isReachingEnd,

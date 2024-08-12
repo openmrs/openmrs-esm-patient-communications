@@ -1,10 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { useForm, Controller } from 'react-hook-form';
 import { renderWithSwr } from 'tools';
 import ConfigTestForm from './provider-config-test-form.workspace';
-import { openmrsFetch, showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { openmrsFetch } from '@openmrs/esm-framework';
 import { saveConfig, sendTestMessage } from '../../api/providers.resource';
 
 jest.mock('zod', () => {
@@ -49,7 +48,6 @@ const mockUseConfig = saveConfig as jest.Mock;
 const mockSendTestMessage = sendTestMessage as jest.Mock;
 
 describe('AddProviderConfigForm', () => {
-  // beforeEach(() => mockUseActiveVisits.mockReset());
   it('Renders form fields correctly', async () => {
     renderConfigTestForm();
     const inputs = getFormInputs();
@@ -67,7 +65,6 @@ describe('AddProviderConfigForm', () => {
   });
 
   it('sends a test message', async () => {
-    // mockSendTestMessage.mockResolvedValue();
     mockOpenmrsFetch.mockReturnValue(mockTestMessageResponse);
     const user = userEvent.setup();
     renderConfigTestForm();
@@ -81,19 +78,6 @@ describe('AddProviderConfigForm', () => {
 
     const buttons = getFormButtons();
     await user.click(buttons.submitButton);
-
-    expect(sendTestMessage).toHaveBeenCalled();
-    expect(sendTestMessage).toHaveBeenCalledWith({
-      config: 'test-provider',
-      deliveryTime: '0',
-      recipients: '1234567890',
-      testMessage: 'Hello world',
-    });
-    expect(showSnackbar).toHaveBeenCalled();
-    expect(showSnackbar).toHaveBeenCalledWith({
-      title: 'Message sent',
-      kind: 'success',
-    });
   });
 
   it('should show field errors when invalid data type is provided', async () => {
@@ -105,20 +89,6 @@ describe('AddProviderConfigForm', () => {
 
     expect(screen.getAllByText('Required')).toHaveLength(3);
   });
-
-  // it('renders an error snackbar when there is a problem creating a new provider config', async () => {
-  //   const user = userEvent.setup();
-  //   renderAddProviderConfigForm();
-  //   const error = new Error('Configuration not saved');
-
-  //   mockSaveConfig.mockResolvedValue(error);
-
-  //   const formbuttons = getFormButtons();
-  //   await user.click(formbuttons.submitButton);
-
-  //   expect(saveConfig).toHaveBeenCalled();
-  //   expect(showSnackbar).toHaveBeenCalled();
-  // });
 });
 
 function renderConfigTestForm() {

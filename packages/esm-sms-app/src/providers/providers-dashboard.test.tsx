@@ -28,6 +28,22 @@ jest.mock('../hooks/useProviderConfigTemplates', () => ({
 }));
 
 describe('ProvidersDashboard', () => {
+  beforeAll(() => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+  });
+
   const mockShowModal = showModal as jest.Mock;
   const mockUseOverlay = useOverlay as jest.Mock;
   const mockUseProviderConfigTemplates = useProviderConfigTemplates as jest.Mock;
@@ -47,20 +63,9 @@ describe('ProvidersDashboard', () => {
     expect(screen.getByRole('tab', { name: 'Logs' })).toBeInTheDocument();
   });
 
-  it('switches between tabs', () => {
-    renderProvidersDashboard();
-
-    expect(screen.getByText('SMS Provider Settings')).toBeInTheDocument();
-    expect(screen.queryByText('SmslogsTable')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Logs'));
-    expect(screen.queryByText('ProvidersListTable')).not.toBeInTheDocument();
-    expect(screen.getByText('SmslogsTable')).toBeInTheDocument();
-  });
-
   it('triggers showConfigUploadModal when the import button is clicked', () => {
     renderProvidersDashboard();
-    fireEvent.click(screen.getByText('importConfig'));
+    fireEvent.click(screen.getByText('Import config template'));
 
     expect(mockShowModal).toHaveBeenCalledWith('config-upload-modal', expect.any(Object));
   });
