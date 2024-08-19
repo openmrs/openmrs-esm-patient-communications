@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json.openmrs.org/routes.schema.json",
+  "backendDependencies": {},
+  "extensions": [
+    {
+      "name": "messages-admin-card-link",
+      "component": "messagesManagementCardLink",
+      "slot": "system-admin-page-card-link-slot",
+      "online": true,
+      "offline": true
+    },
+    {
+      "name": "message-summary-widget",
+      "component": "messagesPatientWidget",
+      "slot": "patient-chart-summary-dashboard-slot",
+      "online": true,
+      "offline": true
+    },
+    {
+      "name": "patient-messages-dashboard",
+      "component": "messagesPatientChartDashboard",
+      "slot": "patient-chart-messages-dashboard-slot",
+      "meta": {
+        "columnSpan": 4
+      },
+      "online": true,
+      "offline": true
+    },
+    {
+      "name": "messages-dashboard-nav-link",
+      "component": "messagesDashboardLink",
+      "slot": "patient-chart-dashboard-slot",
+      "meta": {
+        "slot": "patient-chart-messages-dashboard-slot",
+        "columns": 1,
+        "path": "Messages"
+      }
+    }
+  ],
+  "workspaces": [
+    {
+      "name": "messages-form-workspace",
+      "component": "messagesFormWorkspace",
+      "title": "Messages Form",
+      "type": "Messages-form"
+    }
+  ],
+  "pages": [
+    {
+      "component": "messagesDashboard",
+      "route": "messages",
+      "online": true,
+      "offline": true,
+      "order": 1
+    }
+  ]
+}
