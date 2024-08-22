@@ -2,7 +2,6 @@ import React from 'react';
 import { type MessagesTemplate } from '../../types';
 import TemplateField from '../template-field/template-field.component';
 import { useTranslation } from 'react-i18next';
-import { Layer } from '@carbon/react';
 import styles from './messages-template-field.scss';
 
 const MessagesTemplate = ({ template }: { template: MessagesTemplate }) => {

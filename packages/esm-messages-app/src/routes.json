@@ -21,10 +21,8 @@
       "component": "messagesPatientChartDashboard",
       "slot": "patient-chart-messages-dashboard-slot",
       "meta": {
-        "columnSpan": 4
-      },
-      "online": true,
-      "offline": true
+        "fullWidth": false
+      }
     },
     {
       "name": "messages-dashboard-nav-link",
@@ -32,7 +30,6 @@
       "slot": "patient-chart-dashboard-slot",
       "meta": {
         "slot": "patient-chart-messages-dashboard-slot",
-        "columns": 1,
         "path": "Messages"
       }
     }
