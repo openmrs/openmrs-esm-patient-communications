@@ -8,7 +8,7 @@ const SMSAdminCardLink: React.FC = () => {
   const header = t('smsConfiguration', 'SMS Configuration');
   return (
     <Layer>
-      <ClickableTile href={window.spaBase + '/provider-settings'} rel="noopener noreferrer">
+      <ClickableTile href={window.spaBase + '/provider-settings'} rel="noopener noreferrer" target="_blank">
         <div>
           <div className="heading">{header}</div>
           <div className="content">{t('smsProviderSettings', 'SMS Provider Settings')}</div>

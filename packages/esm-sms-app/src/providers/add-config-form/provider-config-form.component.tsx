@@ -118,7 +118,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
       );
   };
 
-  const selectedTemplate = templates[watch('templateName')] ?? null;
+  const selectedTemplate = templates?.[watch('templateName')] ?? null;
 
   useEffect(() => {
     if (props) {

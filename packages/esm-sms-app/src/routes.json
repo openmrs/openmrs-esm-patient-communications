@@ -35,13 +35,13 @@
   ],
   "modals": [
     {
-    "name": "config-upload-modal",
-    "component": "fileUploadModal"
+      "name": "config-upload-modal",
+      "component": "fileUploadModal"
 
-  },
-  {
-    "name": "remove-config-prompt-modal",
-    "component": "removeProviderConfigPrompt"
-  }
-]
+    },
+    {
+      "name": "remove-config-prompt-modal",
+      "component": "removeProviderConfigPrompt"
+    }
+  ]
 }
