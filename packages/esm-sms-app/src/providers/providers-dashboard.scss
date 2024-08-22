@@ -1,7 +1,7 @@
 @use '@carbon/styles/scss/spacing';
 @use '@carbon/styles/scss/type';
 @use '@carbon/colors';
-@import '@openmrs/esm-styleguide/src/vars';
+@use '@openmrs/esm-styleguide/src/vars' as *;
 
 .mainWrapper {
   display: flex;
@@ -11,7 +11,7 @@
   padding: spacing.$spacing-09 10rem;
 
   &.overlayOpen {
-    padding-right: 1rem;
+    padding-right: spacing.$spacing-05;
   }
 }
 
@@ -36,12 +36,15 @@
 .tabPanel {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
-  padding: 3rem 1rem 1rem;
+  gap: spacing.$spacing-08;
+  padding: spacing.$spacing-09 spacing.$spacing-05 spacing.$spacing-05;
   background: colors.$white-0;
   border-radius: 2px 2px 2px;
 
   &.overlayOpen {
+    /*** Minus the form workspace width which is 26.25rem.
+    **** This pushes content to the right when the workspace is open.
+    ****/
     width: calc(100% - 26.25rem);
   }
 
@@ -61,7 +64,7 @@
   color: var(--brand-03);
   border: 1px solid var(--brand-03);
   display: inline-flex;
-  gap: 1rem;
+  gap: spacing.$spacing-05;
 
   &:hover {
     background-color: var(--brand-03);
@@ -70,6 +73,6 @@
 
 :global(.omrs-breakpoint-lt-desktop){
   .mainWrapper {
-    padding: 1rem;
+    padding: spacing.$spacing-05;
   }
 }

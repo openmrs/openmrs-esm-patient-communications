@@ -1,6 +1,6 @@
 @use '@carbon/styles/scss/spacing';
 @use '@carbon/styles/scss/type';
-@import '@openmrs/esm-styleguide/src/vars';
+@use '@openmrs/esm-styleguide/src/vars' as *;
 
 .errorContainer {
   margin: spacing.$spacing-05 0;
@@ -9,7 +9,7 @@
 .uploadFile {
   color: $ui-02;
   width: 100%;
-  height: 406px;
+  height: 25rem;
 
   div > button {
     max-width: 100%;
@@ -17,7 +17,7 @@
     flex-flow: column;
     justify-content: center;
     align-items: center;
-    height: 406px;
+    height: 25rem;
     position: relative;
   }
 

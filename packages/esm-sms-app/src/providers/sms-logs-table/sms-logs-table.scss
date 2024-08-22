@@ -26,7 +26,7 @@
   }
 
   :global(.cds--list-box__menu-icon) {
-    height: 1rem;
+    height: spacing.$spacing-05;
   }
 
   :global(.cds--dropdown--inline .cds--list-box__menu) {
@@ -37,13 +37,13 @@
 .content {
   @include type.type-style('heading-compact-02');
   color: $text-02;
-  margin-bottom: 0.5rem;
+  margin-bottom: spacing.$spacing-03;
 }
 
 .tileContainer {
   background-color: $ui-02;
   border-top: 1px solid $ui-03;
-  padding: 5rem 0;
+  padding: spacing.$spacing-11 0;
 }
 
 .tile {

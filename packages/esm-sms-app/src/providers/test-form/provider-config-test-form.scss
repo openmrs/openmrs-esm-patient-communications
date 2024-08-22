@@ -1,10 +1,11 @@
 @use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
+@use '@carbon/styles/scss/spacing';
 
 .heading {
   @include type.type-style("heading-03");
-  margin-bottom: 0.5rem;
+  margin-bottom: spacing.$spacing-03;
 }
 
 .columnLabel {
@@ -14,13 +15,13 @@
 
 .radioButtonGroup{
   :global(.cds--radio-button-group--vertical) {
-    gap: 1rem;
+    gap: spacing.$spacing-05;
   }
 
 }
 
 .button {
-  height: 4rem;
+  height: spacing.$spacing-10;
   display: flex;
   align-content: flex-start;
   align-items: baseline;
@@ -28,11 +29,11 @@
 }
 
 .spinner {
-  min-height: 1rem;
+  min-height: spacing.$spacing-05;
 }
 
 .tablet {
-  padding: 1.5rem 1rem;
+  padding: spacing.$spacing-06 spacing.$spacing-05;
   background-color: white;
 }
 
@@ -42,7 +43,7 @@
 
 
 .formContainer {
-  margin: 2.5rem 1rem;
+  margin: spacing.$spacing-08 spacing.$spacing-05;
 }
 
 .form {
@@ -58,7 +59,7 @@
 }
 
 .row {
-  margin: 0.5rem 0 2.5rem;
+  margin: spacing.$spacing-03 0 spacing.$spacing-08;
 }
 
 .errorMessage {
@@ -73,7 +74,7 @@
 
   .row {
     display: flex;
-    gap: 4rem;
+    gap: spacing.$spacing-10;
 
     :global(.cds--col-sm-1) {
       flex-basis: 30%;
@@ -87,7 +88,7 @@
   }
 
   .skeleton {
-    height: 2.5rem;
+    height: spacing.$spacing-08;
   }
 }
 
@@ -99,6 +100,6 @@
   .row {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: spacing.$spacing-05;
   }
 }
