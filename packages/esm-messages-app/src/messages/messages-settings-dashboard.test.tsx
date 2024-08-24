@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/dom';
+import { type Matcher, screen } from '@testing-library/dom';
 import { renderWithSwr, waitForLoadingToFinish } from 'tools';
 import MessagesDashboard from './messages-settings-dashboard.component';
 import { openmrsFetch } from '@openmrs/esm-framework';
@@ -40,7 +40,7 @@ describe('Messages Dashboard', () => {
     expect(screen.getByText(/Default Patient messages settings/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-    mockMessageTemplates.forEach((template) => {
+    mockMessageTemplates.forEach((template: { name: Matcher }) => {
       expect(screen.getByText(template.name)).toBeInTheDocument();
     });
   });

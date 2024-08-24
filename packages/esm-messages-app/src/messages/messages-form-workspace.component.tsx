@@ -80,16 +80,29 @@ const MessagesForm: React.FC<MessagesDashboardProps> = ({
   const { handleSubmit } = methods;
 
   const onSubmit = async (data) => {
-    const updatedTemplates = messagesTemplates.map((template) => {
-      if (data.dynamicFields[template.uuid]) {
-        const updatedFields = template.templateFields.map((field) => ({
-          ...field,
-          defaultValue: data.dynamicFields[template.uuid].fields[field.type] || field.defaultValue,
-        }));
-        return { ...template, templateFields: updatedFields };
-      }
-      return template;
-    });
+    let updatedTemplates;
+
+    if (patientWorkspaceSize) {
+      const updatedFields = template.templateFields.forEach((field) => ({
+        ...field,
+        defaultValue: data.dynamicFields[template.uuid].fields[field.type] || field.defaultValue,
+      }));
+      updatedTemplates = {
+        ...template,
+        templateFields: updatedFields,
+      };
+    } else {
+      updatedTemplates = messagesTemplates.map((template) => {
+        if (data.dynamicFields[template.uuid]) {
+          const updatedFields = template.templateFields.map((field) => ({
+            ...field,
+            defaultValue: data.dynamicFields[template.uuid].fields[field.type] || field.defaultValue,
+          }));
+          return { ...template, templateFields: updatedFields };
+        }
+        return template;
+      });
+    }
 
     const payload = { templates: updatedTemplates };
 

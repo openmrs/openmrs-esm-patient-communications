@@ -61,7 +61,7 @@ function MessagesChartDashboard() {
       if (defaultValue) {
         return defaultValue === 'Deactivate service'
           ? t('deactivated', 'DEACTIVATED')
-          : `${defaultValue}, Started: ${new Date(template.createdAt).toISOString()}, Ends: ${template.templateFields.find((field) => field.type === 'END_OF_MESSAGES')?.defaultValue === 'AFTER_TIMES|7' ? t('after', 'After 7 times') : ''}`;
+          : `${defaultValue}, Started: ${new Date(template.createdAt).toISOString().split('T')[0]}, Ends: ${template.templateFields.find((field) => field.type === 'END_OF_MESSAGES')?.defaultValue === 'AFTER_TIMES|7' ? t('after', 'After 7 times') : ''}`;
       } else {
         return '';
       }
@@ -80,7 +80,7 @@ function MessagesChartDashboard() {
     });
   }, [getStatus, messagesTemplates]);
 
-  const launchEditConditionsForm = useCallback(
+  const launchEditMessagesForm = useCallback(
     (uuid) => {
       const template = messagesTemplates.find((template) => template.uuid === uuid);
       return launchPatientWorkspace('messages-form-workspace', {
@@ -156,7 +156,7 @@ function MessagesChartDashboard() {
                               <OverflowMenuItem
                                 className={styles.menuItem}
                                 id="editMessageType"
-                                onClick={() => launchEditConditionsForm(row.id)}
+                                onClick={() => launchEditMessagesForm(row.id)}
                                 itemText={t('edit', 'Edit')}
                               />
                             </OverflowMenu>

@@ -10,23 +10,27 @@ import { useConfig } from '@openmrs/esm-framework';
 import { Row } from '@carbon/react';
 import { Column } from '@carbon/react';
 import styles from './template-field.scss';
+import { type ConfigObject } from '../../config-schema';
 
 const TemplateField = ({ field, templateUuid }: { field: TemplateField; templateUuid: string }) => {
   const { t } = useTranslation();
-  const config = useConfig;
-  const { control, getValues } = useFormContext();
-  const { name, mandatory, defaultValue, possibleValues, type } = field;
+  const { endOfMessage } = useConfig<ConfigObject>();
+  const { control } = useFormContext();
+  const { name, defaultValue, possibleValues, type } = field;
 
   const renderField = useCallback(
     (fieldProps) => {
       const defaultSelectedDays = () => {
-        const dayLabels = getValues(`dynamicFields.${templateUuid}.fields.${type}`)?.split(',');
+        const dayLabels = type === 'DAY_OF_WEEK' ? defaultValue.split(',') : null;
         return weekDays.filter((day) => dayLabels && dayLabels.includes(day.label));
       };
 
-      const endOfMessages = [
-        { key: 'after-7-times', value: 'AFTER_TIMES|7', label: t('afterSevenTimes', 'After 7 times') },
-      ];
+      const endOfMessages = endOfMessage.map((value) => ({
+        value: `After|${value}`,
+        label: t('endOfMessages', 'After {{ endMessageValue }}', {
+          endMessageValue: value,
+        }),
+      }));
 
       switch (type) {
         case 'END_OF_MESSAGES':
@@ -34,7 +38,7 @@ const TemplateField = ({ field, templateUuid }: { field: TemplateField; template
             <Select {...fieldProps} labelText={t('selectTemplate', 'Choose when to end message')}>
               <SelectItem value={'NO_DATE|EMPTY'} text={t('noRepeat', 'Not specified')} />
               {endOfMessages.map((prop) => (
-                <SelectItem key={prop.key} value={prop.value} text={prop.label} />
+                <SelectItem key={prop.value} value={prop.value} text={prop.label} />
               ))}
             </Select>
           );
@@ -63,7 +67,7 @@ const TemplateField = ({ field, templateUuid }: { field: TemplateField; template
           return (
             <RadioButtonGroup
               legendText={name}
-              defaultSelected={getValues(`dynamicFields.${templateUuid}.fields.${type}`)}
+              defaultSelected={type === 'SERVICE_TYPE' ? defaultValue : null}
               onChange={(selectedValue) => fieldProps.onChange(selectedValue)}
               {...fieldProps}
             >
@@ -77,7 +81,7 @@ const TemplateField = ({ field, templateUuid }: { field: TemplateField; template
           <div>{t('noFieldsSet', 'No fields set yet')}</div>;
       }
     },
-    [getValues, name, possibleValues, t, templateUuid, type],
+    [defaultValue, endOfMessage, name, possibleValues, t, type],
   );
 
   return (

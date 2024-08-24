@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { type Matcher, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithSwr, waitForLoadingToFinish } from 'tools';
 import { mockMessageTemplates } from '__mocks__';
@@ -28,7 +28,7 @@ describe('MessagesTable', () => {
     expect(screen.getAllByText(/Message Type/i)).not.toBe([]);
     expect(screen.getAllByText(/Status/i)).not.toBe([]);
 
-    mockMessageTemplates.forEach((template) => {
+    mockMessageTemplates.forEach((template: { name: Matcher }) => {
       expect(screen.getByText(template.name)).toBeInTheDocument();
     });
   });
