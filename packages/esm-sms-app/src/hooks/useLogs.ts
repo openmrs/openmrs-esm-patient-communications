@@ -4,7 +4,7 @@ import { type SMSLog, type SMSLogsResponse } from '../types';
 import { type ConfigObject } from '../config-schema';
 
 export function useLogsRecords() {
-  const { configurationPageSize = 10 } = useConfig<ConfigObject>();
+  const { configurationPageSize } = useConfig<ConfigObject>();
   const getKey = (pageIndex, previousPageData) => {
     if (previousPageData && !previousPageData.rows.length) return null;
 

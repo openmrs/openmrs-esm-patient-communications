@@ -10,7 +10,7 @@ interface OverlayStore {
 const initialState = { isOverlayOpen: false, component: Function, header: '' };
 
 const getOverlayStore = () => {
-  return getGlobalStore('providers-store', initialState);
+  return getGlobalStore('sms-app-store', initialState);
 };
 
 export const launchOverlay = (headerTitle: string, componentToRender) => {

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   FileUploaderDropContainer,
   InlineNotification,
@@ -14,8 +14,7 @@ import { useTranslation } from 'react-i18next';
 import styles from './upload-template-modal.scss';
 import { DocumentUnknown } from '@carbon/react/icons';
 import { uploadConfigTemplate } from '../../api/providers.resource';
-import { showSnackbar, useConfig } from '@openmrs/esm-framework';
-import { type ConfigObject } from '../../config-schema';
+import { showSnackbar } from '@openmrs/esm-framework';
 
 interface ErrorNotification {
   title: string;
@@ -29,8 +28,10 @@ interface MediaUploaderComponentProps {
 
 const MediaUploaderComponent: React.FC<MediaUploaderComponentProps> = ({ closeModal, mutateTemplates }) => {
   const { t } = useTranslation();
-  const config = useConfig<ConfigObject>();
-  const maxFileSize = config.maxFileSize;
+
+  // Maximm config file size. Hard coding since we don't expect the file size to go beyond
+  // 1MB. This value should be updated to match the actual maximum file size once needed in the future.
+  const maxFileSize = 1;
   const [errorNotification, setErrorNotification] = useState<ErrorNotification>(null);
   const [fileToUpload, setFileToUpload] = useState<File>(null);
 
