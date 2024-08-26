@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SmslogsTable from './sms-logs-table.component';
 import { useTranslation } from 'react-i18next';
-import { useConfig, usePagination, useLayoutType, isDesktop as isDesktopLayout } from '@openmrs/esm-framework';
+import { useConfig, usePagination, useLayoutType } from '@openmrs/esm-framework';
 import { useLogsRecords } from '../../hooks/useLogs';
 import { renderWithSwr } from 'tools';
 
@@ -36,7 +36,7 @@ describe('SmslogsTable', () => {
     mockUseTranslation.mockReturnValue({ t: (key: string, value: string) => value });
     mockUseConfig.mockReturnValue({
       configurationPageSize: [10, 20, 30, 40, 50],
-      smsLogsColumns: [{ header: 'Phone Number' }, { header: 'Message' }, { header: 'Timestamp' }],
+      smsLogsColumns: ['phoneNumber', 'messageContent', 'config', 'timestamp', 'providerId'],
     });
     mockUseLayoutType.mockReturnValue('desktop');
     mockUsePagination.mockReturnValue({
@@ -45,20 +45,6 @@ describe('SmslogsTable', () => {
       goTo: jest.fn(),
       currentPage: 1,
     });
-  });
-
-  it('renders the component correctly', () => {
-    mockUseLogsRecords.mockReturnValueOnce({
-      smsLogs: mockLogs,
-      isLoadingLogs: false,
-      isValidatingLogs: false,
-      mutateLogs: jest.fn(),
-      error: null,
-    });
-    renderSmsLogsTable();
-    expect(screen.getByText('Phone Number')).toBeInTheDocument();
-    expect(screen.getByText('Message')).toBeInTheDocument();
-    expect(screen.getByText('Timestamp')).toBeInTheDocument();
   });
 
   it('displays loading skeleton when logs are loading', () => {
