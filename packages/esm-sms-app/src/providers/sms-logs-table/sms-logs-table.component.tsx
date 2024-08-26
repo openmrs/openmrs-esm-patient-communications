@@ -44,14 +44,31 @@ const SmslogsTable = () => {
     return Array.from(new Set(phoneNumbers));
   }, [smsLogs]);
 
+  /**** Comments below are used for translating keys in logs table, remove with caution *****/
+  // t('phoneNumber', 'Phone number')
+  // t('messageContent', 'Message')
+  // t('config', 'Configuration')
+  // t('timestamp', 'Timestamp')
+  // t('providerId', 'Provider')
+  // t('errorMessage', 'Error message')
+  // t('providerStatus', 'Provider status')
+  // t('openMrsId', 'Openmrs ID')
+  // t('deliveryStatus', 'Delivery status')
+  // t('smsDirection', 'SMS direction')
+  // t('modificationDate', 'Modification date')
+  // t('creationDate', 'Creation date')
+  // t('modifiedBy', 'Modified by')
+  // t('creator', 'Creator')
+
   const headers = useMemo(
     () =>
       config?.smsLogsColumns?.map((column) => ({
-        ...column,
+        key: column,
+        header: t(column),
         isSortable: true,
         sortFunc: (valueA, valueB) => valueA.display?.localeCompare(valueB.display),
       })),
-    [config?.smsLogsColumns],
+    [config?.smsLogsColumns, t],
   );
 
   const filteredLogs = useMemo(() => {

@@ -8,39 +8,19 @@ export const configSchema = {
   },
   deliveryTime: {
     _type: Type.Array,
-    _description: 'The default delivery times for when testing configurations',
+    _description:
+      'The default delivery times after which test messages are sent.They as a delay before sending the test messages, i.e After 2hrs, After 30 mins',
     _default: [],
   },
   smsLogsColumns: {
     _type: Type.Array,
-    _description: 'Number of columns to display in logs table',
-    _default: [
-      {
-        key: 'phoneNumber',
-        header: 'Phone number',
-      },
-      {
-        key: 'messageContent',
-        header: 'Message',
-      },
-      {
-        key: 'config',
-        header: 'Configuration',
-      },
-      {
-        key: 'timestamp',
-        header: 'Timestamp',
-      },
-      {
-        key: 'providerId',
-        header: 'Provider',
-      },
-    ],
+    _description: 'Columns to display in logs table. Each value should be a property of SMSlogs record type',
+    _default: ['phoneNumber', 'messageContent', 'config', 'timestamp', 'providerId'],
   },
 };
 
 export interface ConfigObject {
   configurationPageSize: number;
   deliveryTime: Array<string>;
-  smsLogsColumns: Array<{ key: string; header: string }>;
+  smsLogsColumns: Array<string>;
 }

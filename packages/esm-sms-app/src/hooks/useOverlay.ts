@@ -1,4 +1,4 @@
-import { getGlobalStore, ExtensionSlot, renderExtension } from '@openmrs/esm-framework';
+import { getGlobalStore } from '@openmrs/esm-framework';
 import { useEffect, useState } from 'react';
 
 interface OverlayStore {
