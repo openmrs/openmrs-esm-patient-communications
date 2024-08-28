@@ -19,16 +19,18 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
-import { useLayoutType } from '@openmrs/esm-framework';
+import { useConfig, useLayoutType } from '@openmrs/esm-framework';
 import { CardHeader, EmptyState, ErrorState, launchPatientWorkspace } from '@openmrs/esm-patient-common-lib';
 import { useMessagesTemplates } from '../hooks/useMessagesTemplates';
 import styles from './messages-chart-dashboard.scss';
 import { type MessagesTemplate } from '../types';
+import { type ConfigObject } from '../config-schema';
 
 function MessagesChartDashboard() {
   const { t } = useTranslation();
   const displayText = t('messages', 'Messages');
   const headerTitle = t('messages', 'Messages');
+  const { endOfMessageType } = useConfig<ConfigObject>();
   const layout = useLayoutType();
   const isTablet = layout === 'tablet';
   const isDesktop = layout === 'small-desktop' || layout === 'large-desktop';
@@ -59,9 +61,12 @@ function MessagesChartDashboard() {
       const defaultValue = template.templateFields.find((field) => field.type === 'SERVICE_TYPE')?.defaultValue ?? null;
 
       if (defaultValue) {
+        const endOfMessages =
+          template.templateFields.find((field) => field.type === 'END_OF_MESSAGES')?.defaultValue ?? null;
+        const endOfMessageValue = endOfMessages !== 'NO_DATE|EMPTY' ? endOfMessages.split('|')[1] : '';
         return defaultValue === 'Deactivate service'
           ? t('deactivated', 'DEACTIVATED')
-          : `${defaultValue}, Started: ${new Date(template.createdAt).toISOString().split('T')[0]}, Ends: ${template.templateFields.find((field) => field.type === 'END_OF_MESSAGES')?.defaultValue === 'AFTER_TIMES|7' ? t('after', 'After 7 times') : ''}`;
+          : `${defaultValue}, Started: ${new Date(template.createdAt).toISOString().split('T')[0]}, Ends: ${t('endOfMessagesType', 'After {{endOfMessageValue}} times', { endOfMessageValue })}`;
       } else {
         return '';
       }

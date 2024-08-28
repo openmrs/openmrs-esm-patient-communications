@@ -14,7 +14,7 @@ import { type ConfigObject } from '../../config-schema';
 
 const TemplateField = ({ field, templateUuid }: { field: TemplateField; templateUuid: string }) => {
   const { t } = useTranslation();
-  const { endOfMessage } = useConfig<ConfigObject>();
+  const { endOfMessageType } = useConfig<ConfigObject>();
   const { control } = useFormContext();
   const { name, defaultValue, possibleValues, type } = field;
 
@@ -24,10 +24,11 @@ const TemplateField = ({ field, templateUuid }: { field: TemplateField; template
         const dayLabels = type === 'DAY_OF_WEEK' ? defaultValue.split(',') : null;
         return weekDays.filter((day) => dayLabels && dayLabels.includes(day.label));
       };
+      const defaultEndOfMessages = type === 'END_OF_MESSAGE' ? defaultValue : '';
 
-      const endOfMessages = endOfMessage.map((value) => ({
-        value: `After|${value}`,
-        label: t('endOfMessages', 'After {{ endMessageValue }}', {
+      const endOfMessages = endOfMessageType.map((value) => ({
+        value: `AFTER_TIMES|${value}`,
+        label: t('endOfMessages', 'After {{ endMessageValue }} times', {
           endMessageValue: value,
         }),
       }));
@@ -35,8 +36,12 @@ const TemplateField = ({ field, templateUuid }: { field: TemplateField; template
       switch (type) {
         case 'END_OF_MESSAGES':
           return (
-            <Select {...fieldProps} labelText={t('selectTemplate', 'Choose when to end message')}>
-              <SelectItem value={'NO_DATE|EMPTY'} text={t('noRepeat', 'Not specified')} />
+            <Select
+              {...fieldProps}
+              value={fieldProps.value ?? defaultEndOfMessages}
+              labelText={t('selectTemplate', 'Choose when to end message')}
+            >
+              <SelectItem value="" text={t('noRepeat', 'Not specified')} />
               {endOfMessages.map((prop) => (
                 <SelectItem key={prop.value} value={prop.value} text={prop.label} />
               ))}
@@ -81,7 +86,7 @@ const TemplateField = ({ field, templateUuid }: { field: TemplateField; template
           <div>{t('noFieldsSet', 'No fields set yet')}</div>;
       }
     },
-    [defaultValue, endOfMessage, name, possibleValues, t, type],
+    [defaultValue, endOfMessageType, name, possibleValues, t, type],
   );
 
   return (

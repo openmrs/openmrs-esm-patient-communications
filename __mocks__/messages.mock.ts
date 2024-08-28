@@ -1,0 +1,140 @@
+export const mockMessageTemplates = [
+  {
+    id: 1,
+    name: 'Adherence report daily',
+    serviceQuery:
+      "SELECT cast(CASE\n                WHEN mtfv.weekdays LIKE concat('%', DAYNAME(:startDateTime), '%') THEN :startDateTime\n                WHEN mtfv.weekdays LIKE concat('%', DAYNAME(DATE_ADD(:startDateTime, INTERVAL 1 DAY)), '%')\n                    THEN DATE_ADD(:startDateTime, INTERVAL 1 DAY)\n    END AS DATE)         AS EXECUTION_DATE,\n       1                 AS MESSAGE_ID,\n       mtfv.SERVICE_TYPE AS CHANNEL_ID,\n       pmt.patient_id    AS PATIENT_ID,\n       pmt.actor_id      AS ACTOR_ID\nFROM messages_patient_template pmt\n         JOIN (SELECT t.patient_template_id,\n                      MAX(CASE WHEN tf.name = 'Service type' THEN t.value ELSE NULL END)                                   AS SERVICE_TYPE,\n                      MAX(CASE\n                              WHEN tf.name = 'Week day of delivering message' THEN t.value\n                              ELSE NULL END)                                                                               AS WEEKDAYS,\n                      MAX(\n                              CASE WHEN tf.name = 'Start of daily messages' THEN t.value ELSE NULL END)                    AS START_DATE,\n                      MAX(CASE\n                              WHEN tf.name = 'End of daily messages' THEN SUBSTRING_INDEX(t.value, '|', 1)\n                              ELSE NULL END)                                                                               AS END_DATE_TYPE,\n                      MAX(CASE\n                              WHEN tf.name = 'End of daily messages' THEN SUBSTRING_INDEX(t.value, '|', -1)\n                              ELSE NULL END)                                                                               AS END_DATE\n               FROM messages_template_field_value t\n                        JOIN messages_template_field tf ON tf.messages_template_field_id = t.template_field_id\n               GROUP BY t.patient_template_id) mtfv\n              ON mtfv.patient_template_id = pmt.messages_patient_template_id\n                  AND mtfv.service_type <> 'Deactivate service'\n                  AND (mtfv.weekdays LIKE concat('%', DAYNAME(:startDateTime), '%')\n                      || mtfv.weekdays LIKE concat('%', DAYNAME(DATE_ADD(:startDateTime, INTERVAL 1 DAY)), '%'))\n                  AND mtfv.start_date <= :startDateTime\n                  AND (mtfv.end_date = 'EMPTY'\n                      || (mtfv.end_date_type = 'DATE_PICKER' && mtfv.end_date >= :startDateTime)\n                      || (mtfv.end_date_type = 'AFTER_TIMES' && mtfv.end_date > (select count(*)\n                                                                                 from messages_scheduled_service\n                                                                                 where patient_template_id = pmt.messages_patient_template_id)))\n         JOIN person_attribute pa ON pa.person_id = pmt.patient_id and pa.value = 'ACTIVATED' and pa.voided = 0\n         JOIN person_attribute_type pat\n              ON pat.person_attribute_type_id = pa.person_attribute_type_id AND pat.name = 'Person status'\n         JOIN messages_template mt ON mt.name = 'Adherence report daily' and mt.messages_template_id = pmt.template_id\nWHERE pmt.voided = 0",
+    serviceQueryType: 'SQL',
+    calendarServiceQuery:
+      "SELECT EXECUTION_DATE,\n       MESSAGE_ID,\n       CHANNEL_ID,\n       null AS STATUS_ID\nFROM (SELECT TIMESTAMP(selected_date, :bestContactTime) AS EXECUTION_DATE,\n             1                                          AS MESSAGE_ID,\n             :Service_type                              AS CHANNEL_ID\n      FROM (\n               SELECT *\n               FROM (SELECT * FROM DATES_LIST_10K_DAYS_TABLE) v\n               WHERE selected_date <= DATE(:endDateTime)\n                 AND selected_date >= DATE(:startDateTime)\n                 AND :Week_day_of_delivering_message\n                   LIKE concat('%', DAYNAME(selected_date), '%')) dates) temp\nWHERE EXECUTION_DATE > GET_PREDICTION_START_DATE_FOR_ADHERENCE_DAILY(:patientId, :actorId, :executionStartDateTime)\n  AND EXECUTION_DATE <= :endDateTime\n  AND EXECUTION_DATE >= :startDateTime\n  AND CHANNEL_ID != 'Deactivate service'\nUNION\nSELECT mssg.msg_send_time AS EXECUTION_DATE,\n       1                  AS MESSAGE_ID,\n       mssg.channel_type  AS CHANNEL_ID,\n       mss.status         AS STATUS_ID\nFROM messages_scheduled_service mss\n         JOIN messages_patient_template mpt on mpt.messages_patient_template_id = mss.patient_template_id\n         JOIN messages_template mt on mt.messages_template_id = mpt.template_id\n         JOIN messages_scheduled_service_group mssg on mssg.messages_scheduled_service_group_id = mss.group_id\nWHERE mt.name = 'Adherence report daily'\n  AND mpt.patient_id = :patientId\n  AND mpt.actor_id = :actorId\n  AND mssg.patient_id = :patientId\n  AND mssg.msg_send_time >= :startDateTime\n  AND mssg.msg_send_time <= :endDateTime\nORDER BY 1 desc;\n",
+    shouldUseOptimizedQuery: false,
+    templateFields: [
+      {
+        id: 2,
+        name: 'Week day of delivering message',
+        mandatory: true,
+        defaultValue: 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+        defaultValues: [
+          {
+            id: 2,
+            relationshipTypeId: 6,
+            direction: 'A',
+            templateFieldId: 2,
+            defaultValue: 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+          },
+        ],
+        possibleValues: [],
+        type: 'DAY_OF_WEEK',
+        uuid: '95567627-20b2-11ea-ac12-0242c0a82002',
+      },
+      {
+        id: 1,
+        name: 'Service type',
+        mandatory: true,
+        defaultValue: 'Deactivate service',
+        defaultValues: [
+          {
+            id: 1,
+            relationshipTypeId: 6,
+            direction: 'A',
+            templateFieldId: 1,
+            defaultValue: 'Deactivate service',
+          },
+        ],
+        possibleValues: ['Deactivate service', 'SMS', 'Call'],
+        type: 'SERVICE_TYPE',
+        uuid: '95566224-20b2-11ea-ac12-0242c0a82002',
+      },
+      {
+        id: 3,
+        name: 'Start of daily messages',
+        mandatory: false,
+        defaultValue: '',
+        defaultValues: [],
+        possibleValues: [],
+        type: 'START_OF_MESSAGES',
+        uuid: '955687fc-20b2-11ea-ac12-0242c0a82002',
+      },
+      {
+        id: 4,
+        name: 'End of daily messages',
+        mandatory: true,
+        defaultValue: 'NO_DATE|EMPTY',
+        defaultValues: [
+          {
+            id: 3,
+            relationshipTypeId: 6,
+            direction: 'A',
+            templateFieldId: 4,
+            defaultValue: 'NO_DATE|EMPTY',
+          },
+        ],
+        possibleValues: [],
+        type: 'END_OF_MESSAGES',
+        uuid: '9556992c-20b2-11ea-ac12-0242c0a82002',
+      },
+    ],
+    createdAt: 1626100294000,
+    uuid: '9556482a-20b2-11ea-ac12-0242c0a82002',
+  },
+  {
+    id: 2,
+    name: 'Visit reminder',
+    serviceQuery:
+      "SELECT cast(CASE\n                WHEN (SELECT concat(',', property_value, ',')\n                      FROM global_property\n                      WHERE property = 'message.daysToCallBeforeVisit.default'\n                      LIMIT 1) LIKE concat('%,', DATEDIFF(v.date_started, :startDateTime), ',%')\n                    THEN :startDateTime\n                WHEN (SELECT concat(',', property_value, ',')\n                      FROM global_property\n                      WHERE property = 'message.daysToCallBeforeVisit.default'\n                      LIMIT 1) LIKE concat('%,', DATEDIFF(v.date_started, DATE_ADD(@startDateTime, INTERVAL 1 DAY)), ',%')\n                    THEN DATE_ADD(v.date_started, INTERVAL 1 DAY)\n    END AS DATE)             AS EXECUTION_DATE,\n       1                     AS MESSAGE_ID,\n       mtfv.SERVICE_TYPE     AS CHANNEL_ID,\n       pmt.patient_id        AS PATIENT_ID,\n       pmt.actor_id          AS ACTOR_ID,\n       v.visit_type_id       AS visitTypeId,\n       v.location_id         AS locationId,\n       v.date_started        AS dateStarted,\n       v.visit_id            AS visitId,\n       (SELECT va.value_reference\n        FROM visit_attribute va\n                 JOIN visit_attribute_type vat ON va.attribute_type_id = vat.visit_attribute_type_id\n        WHERE vat.name = 'Visit Time'\n          AND va.visit_id = v.visit_id\n          AND va.voided = 0) AS timeStarted\nFROM messages_patient_template pmt\n         JOIN (SELECT t.patient_template_id,\n                      MAX(CASE WHEN tf.name = 'Service type' THEN t.value ELSE NULL END) AS      SERVICE_TYPE,\n                      MAX(CASE WHEN tf.name = 'Start of messages' THEN t.value ELSE NULL END) AS START_DATE,\n                      MAX(CASE\n                              WHEN tf.name = 'End of messages' THEN SUBSTRING_INDEX(t.value, '|', 1)\n                              ELSE NULL END) AS                                                  END_DATE_TYPE,\n                      MAX(CASE\n                              WHEN tf.name = 'End of messages' THEN SUBSTRING_INDEX(t.value, '|', -1)\n                              ELSE NULL END) AS                                                  END_DATE\n               FROM messages_template_field_value t\n                        JOIN messages_template_field tf ON tf.messages_template_field_id = t.template_field_id\n               GROUP BY t.patient_template_id) mtfv\n              ON mtfv.patient_template_id = pmt.messages_patient_template_id\n                  AND mtfv.service_type <> 'Deactivate service'\n                  AND mtfv.start_date <= :startDateTime\n                  AND (mtfv.end_date = 'EMPTY'\n                      || (mtfv.end_date_type = 'DATE_PICKER' && mtfv.end_date >= :startDateTime)\n                      || (mtfv.end_date_type = 'AFTER_TIMES' && mtfv.end_date > (select count(*)\n                                                                                 from messages_scheduled_service\n                                                                                 where patient_template_id = pmt.messages_patient_template_id)))\n         JOIN person_attribute pa ON pa.person_id = pmt.patient_id and pa.value = 'ACTIVATED' and pa.voided = 0\n         JOIN person_attribute_type pat\n              ON pat.person_attribute_type_id = pa.person_attribute_type_id AND pat.name = 'Person status'\n         JOIN messages_template mt ON mt.name = 'Visit reminder' and mt.messages_template_id = pmt.template_id\n         JOIN visit v ON v.patient_id = pmt.patient_id AND v.voided = 0\n    AND ((SELECT concat(',', property_value, ',')\n          FROM global_property\n          WHERE property = 'message.daysToCallBeforeVisit.default'\n          LIMIT 1) LIKE concat('%,', DATEDIFF(v.date_started, :startDateTime), ',%')\n        OR (SELECT concat(',', property_value, ',')\n            FROM global_property\n            WHERE property = 'message.daysToCallBeforeVisit.default'\n            LIMIT 1) LIKE concat('%,', DATEDIFF(v.date_started, DATE_ADD(@startDateTime, INTERVAL 1 DAY)), ',%'))\nWHERE pmt.voided = 0",
+    serviceQueryType: 'SQL',
+    calendarServiceQuery:
+      "SELECT EXECUTION_DATE,\n       MESSAGE_ID,\n       CHANNEL_ID,\n       null AS STATUS_ID\nFROM (\n         SELECT TIMESTAMP(selected_date, :bestContactTime) AS EXECUTION_DATE,\n                1                                          AS MESSAGE_ID,\n                :Service_type                              AS CHANNEL_ID\n         FROM DATES_LIST_10K_DAYS_TABLE\n                  JOIN (\n             SELECT v.date_started AS visit_dates\n             FROM visit v\n                      LEFT JOIN (\n                 SELECT visit_id,\n                        value_reference as visit_status\n                 FROM visit_attribute va\n                          JOIN visit_attribute_type vat ON va.attribute_type_id = vat.visit_attribute_type_id\n                 WHERE vat.name = 'Visit Status'\n                   AND va.voided = 0\n             ) AS visit_statuses ON v.visit_id = visit_statuses.visit_id\n             WHERE v.patient_id = :patientId\n               AND v.voided = 0\n               AND visit_statuses.visit_status = 'SCHEDULED'\n         ) dates_of_visit\n         WHERE concat(',', (\n             SELECT property_value\n             FROM global_property\n             WHERE property = 'message.daysToCallBeforeVisit.default'), ',')\n             LIKE concat('%,', datediff(visit_dates, selected_date), ',%')\n           AND date(visit_dates) != selected_date\n     ) dates_before_visit\nWHERE EXECUTION_DATE <= :endDateTime\n  AND EXECUTION_DATE >= :startDateTime\n  AND EXECUTION_DATE > GET_PREDICTION_START_DATE_FOR_VISIT(:patientId, :actorId, :executionStartDateTime)\n  AND CHANNEL_ID != 'Deactivate service'\nUNION\nSELECT mssg.msg_send_time AS EXECUTION_DATE,\n       1                  AS MESSAGE_ID,\n       mssg.channel_type  AS CHANNEL_ID,\n       mss.status         AS STATUS_ID\nFROM messages_scheduled_service mss\n         JOIN messages_patient_template mpt ON mpt.messages_patient_template_id = mss.patient_template_id\n         JOIN messages_template mt ON mt.messages_template_id = mpt.template_id\n         JOIN messages_scheduled_service_group mssg ON mssg.messages_scheduled_service_group_id = mss.group_id\nWHERE mt.name = 'Visit reminder'\n  AND mpt.patient_id = :patientId\n  AND mpt.actor_id = :actorId\n  AND mssg.patient_id = :patientId\n  AND mssg.msg_send_time >= :startDateTime\n  AND mssg.msg_send_time <= :endDateTime\nORDER BY 1 desc;\n",
+    shouldUseOptimizedQuery: false,
+    templateFields: [
+      {
+        id: 6,
+        name: 'Start of messages',
+        mandatory: false,
+        defaultValue: '',
+        defaultValues: [],
+        possibleValues: [],
+        type: 'START_OF_MESSAGES',
+        uuid: '95575327-20b2-11ea-ac12-0242c0a82002',
+      },
+      {
+        id: 5,
+        name: 'Service type',
+        mandatory: true,
+        defaultValue: 'SMS',
+        defaultValues: [
+          {
+            id: 4,
+            relationshipTypeId: 6,
+            direction: 'A',
+            templateFieldId: 5,
+            defaultValue: 'SMS',
+          },
+        ],
+        possibleValues: ['Deactivate service', 'SMS', 'Call'],
+        type: 'SERVICE_TYPE',
+        uuid: '95574976-20b2-11ea-ac12-0242c0a82002',
+      },
+      {
+        id: 7,
+        name: 'End of messages',
+        mandatory: true,
+        defaultValue: 'AFTER_TIMES|7',
+        defaultValues: [
+          {
+            id: 5,
+            relationshipTypeId: 6,
+            direction: 'A',
+            templateFieldId: 7,
+            defaultValue: 'NO_DATE|EMPTY',
+          },
+        ],
+        possibleValues: [],
+        type: 'END_OF_MESSAGES',
+        uuid: '95575cbd-20b2-11ea-ac12-0242c0a82002',
+      },
+    ],
+    createdAt: 1626100294000,
+    uuid: '95573fe3-20b2-11ea-ac12-0242c0a82002',
+  },
+];

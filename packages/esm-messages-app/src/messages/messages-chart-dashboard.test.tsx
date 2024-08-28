@@ -1,6 +1,5 @@
 import React from 'react';
-import { type Matcher, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { screen } from '@testing-library/react';
 import { renderWithSwr, waitForLoadingToFinish } from 'tools';
 import { mockMessageTemplates } from '__mocks__';
 import MessagesChartDashboard from './messages-chart-dashboard.component';
@@ -28,7 +27,7 @@ describe('MessagesTable', () => {
     expect(screen.getAllByText(/Message Type/i)).not.toBe([]);
     expect(screen.getAllByText(/Status/i)).not.toBe([]);
 
-    mockMessageTemplates.forEach((template: { name: Matcher }) => {
+    mockMessageTemplates.forEach((template) => {
       expect(screen.getByText(template.name)).toBeInTheDocument();
     });
   });

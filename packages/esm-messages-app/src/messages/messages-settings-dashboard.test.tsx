@@ -1,14 +1,16 @@
 import React from 'react';
-import { type Matcher, screen } from '@testing-library/dom';
+import { screen } from '@testing-library/dom';
 import { renderWithSwr, waitForLoadingToFinish } from 'tools';
-import MessagesDashboard from './messages-settings-dashboard.component';
-import { openmrsFetch } from '@openmrs/esm-framework';
 import { mockMessageTemplates } from '__mocks__';
+import MessagesDashboard from './messages-settings-dashboard.component';
 import { useMessagesTemplates } from '../hooks/useMessagesTemplates';
 
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
-const mockuseMessageTemplates = useMessagesTemplates as jest.Mock;
-
+jest.mock('@openmrs/esm-framework', () => ({
+  ...jest.requireActual('@openmrs/esm-framework'),
+  useConfig: jest.fn(() => ({
+    endOfMessageType: [7, 8],
+  })),
+}));
 jest.mock('../hooks/useMessagesTemplates', () => ({
   useMessagesTemplates: jest.fn(),
 }));
@@ -26,6 +28,8 @@ describe('Messages Dashboard', () => {
     }));
   });
 
+  const mockuseMessageTemplates = useMessagesTemplates as jest.Mock;
+
   it('renders messages settings dashboard', async () => {
     mockuseMessageTemplates.mockImplementation(() => ({
       messagesTemplates: mockMessageTemplates,
@@ -38,9 +42,9 @@ describe('Messages Dashboard', () => {
     await waitForLoadingToFinish();
     expect(screen.getAllByText(/Messages Settings/i)).not.toBe([]);
     expect(screen.getByText(/Default Patient messages settings/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
-    mockMessageTemplates.forEach((template: { name: Matcher }) => {
+    expect(screen.getByRole('button', { name: /Save/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
+    mockMessageTemplates.forEach((template) => {
       expect(screen.getByText(template.name)).toBeInTheDocument();
     });
   });
