@@ -33,8 +33,8 @@ const SmslogsTable = () => {
   const isDesktop = isDesktopLayout(layout);
   const isTablet = !isDesktop;
   const headerTitle = t('smsLogs', 'SMS Logs');
-  const pageSizes = config?.configurationPageSize ?? [10, 20, 30, 40, 50];
-  const [pageSize, setPageSize] = useState(config?.configurationPageSize ?? 10);
+  const pageSizes = [10, 20, 30, 40, 50];
+  const [pageSize, setPageSize] = useState();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All');
   const { smsLogs, isLoadingLogs, isValidatingLogs, mutateLogs, error } = useLogsRecords();
@@ -143,7 +143,6 @@ const SmslogsTable = () => {
           size={isTablet ? 'lg' : 'sm'}
           useZebraStyles
           overflowMenuOnHover={isDesktop}
-          // sortRow={sortRow}
         >
           {({ rows, headers, getHeaderProps, getTableProps }) => (
             <>
