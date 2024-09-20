@@ -45,8 +45,8 @@ const ProvidersListTable = () => {
   const layout = useLayoutType();
   const isDesktop = isDesktopLayout(layout);
   const isTablet = !isDesktop;
-  const pageSizes = config?.configurationPageSize ?? [10, 20, 30, 40, 50];
-  const [pageSize, setPageSize] = useState(config?.configurationPageSize ?? 10);
+  const pageSizes = [10, 20, 30, 40, 50];
+  const [pageSize, setPageSize] = useState();
   const { providerConfigurations, isLoadingConfigs, error, isValidatingConfigs } = useProviderConfigurations();
 
   const launchAddProviderConfigForm = useCallback(
