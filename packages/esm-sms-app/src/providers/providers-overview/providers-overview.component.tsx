@@ -20,28 +20,23 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
-import styles from './providers-overview.scss';
 import {
-  useConfig,
   usePagination,
   useLayoutType,
   isDesktop as isDesktopLayout,
   showModal,
-  ExtensionSlot,
+  launchWorkspace,
 } from '@openmrs/esm-framework';
-import { type ConfigObject } from '../../config-schema';
 import { ConfigurationsActionMenu } from './providers-action-menu.component';
 import { TableExpandRow } from '@carbon/react';
 import { TableExpandedRow } from '@carbon/react';
-import { launchOverlay } from '../../hooks/useOverlay';
-import AddProviderConfigForm from '../add-config-form/provider-config-form.component';
 import { EmptyState } from '../empty-state/empty-state.component';
 import { Tag } from '@carbon/react';
+import styles from './providers-overview.scss';
 import classNames from 'classnames';
 
 const ProvidersListTable = () => {
   const { t } = useTranslation();
-  const config = useConfig<ConfigObject>();
   const layout = useLayoutType();
   const isDesktop = isDesktopLayout(layout);
   const isTablet = !isDesktop;
@@ -50,7 +45,10 @@ const ProvidersListTable = () => {
   const { providerConfigurations, isLoadingConfigs, error, isValidatingConfigs } = useProviderConfigurations();
 
   const launchAddProviderConfigForm = useCallback(
-    () => launchOverlay(t('addProvider', 'Add Provider'), <AddProviderConfigForm />),
+    () =>
+      launchWorkspace('add-provider-config-form', {
+        workspaceTitle: t('addProviderConfigFormWorkspaceTitle', 'Add Provider'),
+      }),
     [t],
   );
 
@@ -252,15 +250,12 @@ function ConfigDetails({ config }) {
   const state = useMemo(() => ({ providerName: config.name, ...config }), [config]);
 
   const launchEditProviderConfigForm = useCallback(() => {
-    launchOverlay(editConfigWorkspaceTitle, <ExtensionSlot name="add-provider-config-form-slot" state={state} />);
+    launchWorkspace('add-provider-config-form-slot', { workspaceTitle: editConfigWorkspaceTitle, ...state });
   }, [editConfigWorkspaceTitle, state]);
 
   const launchConfigTestForm = useCallback(
     () =>
-      launchOverlay(
-        `${t('test', 'Test')} ${config.name}`,
-        <ExtensionSlot name="test-provider-config-form-slot" state={state} />,
-      ),
+      launchWorkspace('test-provider-config-form', { workspaceTitle: `${t('test', 'Test')} ${config.name}`, ...state }),
     [config.name, state, t],
   );
 

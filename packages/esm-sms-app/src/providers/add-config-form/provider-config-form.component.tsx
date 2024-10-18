@@ -19,7 +19,7 @@ import {
 } from '@carbon/react';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ResponsiveWrapper, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import { ResponsiveWrapper, closeWorkspace, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
 import { useProviderConfigTemplates } from '../../hooks/useProviderConfigTemplates';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,7 +27,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { type Prop, type ProviderConfiguration } from '../../types';
 import { saveConfig } from '../../api/providers.resource';
 import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
-import { closeOverlay } from '../../hooks/useOverlay';
 import styles from './provider-config-form.scss';
 
 interface AddProviderConfigProps {
@@ -67,7 +66,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
   const { mutateConfigs, providerConfigurations } = useProviderConfigurations();
-  const { templates, isLoadingTemplates, error } = useProviderConfigTemplates();
+  const { templates, isLoadingTemplates } = useProviderConfigTemplates();
 
   const {
     handleSubmit,
@@ -91,7 +90,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
 
   const onSubmit = async (data: AddProviderConfigFormData) => {
     if (!isDirty) {
-      return closeOverlay();
+      return closeForm();
     }
     const props = Object.entries(data.dynamicFields).map(([key, value]) => ({ name: key, value: value }));
     const { providerName, dynamicFields, ...rest } = data;
@@ -108,7 +107,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
           kind: 'success',
         });
         mutateConfigs();
-        closeOverlay();
+        closeForm();
       })
       .catch(() =>
         showSnackbar({
@@ -119,6 +118,8 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
   };
 
   const selectedTemplate = templates?.[watch('templateName')] ?? null;
+
+  const closeForm = () => closeWorkspace('add-provider-config-form');
 
   useEffect(() => {
     if (props) {
@@ -328,7 +329,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
         })()}
       </Stack>
       <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
-        <Button className={styles.button} kind="secondary" onClick={closeOverlay}>
+        <Button className={styles.button} kind="secondary" onClick={closeForm}>
           {t('discard', 'Discard')}
         </Button>
         <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">

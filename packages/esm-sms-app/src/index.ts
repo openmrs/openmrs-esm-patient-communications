@@ -19,18 +19,17 @@ export const testProviderConfigForm = getAsyncLifecycle(
   options,
 );
 
-// t('addProviderConfigFormWorkspaceTitle',  'Add Provider')
 export const addProviderConfigForm = getAsyncLifecycle(
   () => import('./providers/add-config-form/provider-config-form.component'),
   options,
 );
 
-export const fileUploadModal = getAsyncLifecycle(
-  () => import('./providers/modals/upload-template-modal.component'),
+export const configUploadModal = getAsyncLifecycle(
+  () => import('./providers/modals/config-upload-modal.component'),
   options,
 );
 
-export const removeProviderConfigPrompt = getAsyncLifecycle(
+export const removeConfigModal = getAsyncLifecycle(
   () => import('./providers/modals/remove-config-modal.component'),
   options,
 );

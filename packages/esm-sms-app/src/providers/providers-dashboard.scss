@@ -3,14 +3,19 @@
 @use '@carbon/colors';
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
-.mainWrapper {
+.mainPageWrapper {
+  display: flex;
+}
+
+.container {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 100%;
   gap: spacing.$spacing-07;
   padding: spacing.$spacing-09 10rem;
+  transition: padding-right .5s ease-in-out;
 
-  &.overlayOpen {
+  &.workspaceOpen {
     padding-right: spacing.$spacing-05;
   }
 }
@@ -40,13 +45,6 @@
   padding: spacing.$spacing-09 spacing.$spacing-05 spacing.$spacing-05;
   background: colors.$white-0;
   border-radius: 2px 2px 2px;
-
-  &.overlayOpen {
-    /*** Minus the form workspace width which is 26.25rem.
-    **** This pushes content to the right when the workspace is open.
-    ****/
-    width: calc(100% - 26.25rem);
-  }
 }
 
 .tab {
@@ -70,8 +68,8 @@
   }
 }
 
-:global(.omrs-breakpoint-lt-desktop){
-  .mainWrapper {
-    padding: spacing.$spacing-05;
-  }
-}
+// :global(.omrs-breakpoint-lt-desktop){
+//   .mainWrapper {
+//     padding: spacing.$spacing-05;
+//   }
+// }

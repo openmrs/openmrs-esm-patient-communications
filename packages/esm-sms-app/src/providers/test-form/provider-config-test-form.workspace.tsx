@@ -15,14 +15,13 @@ import {
   Accordion,
   TextArea,
 } from '@carbon/react';
-import { ResponsiveWrapper, useLayoutType, showSnackbar } from '@openmrs/esm-framework';
+import { ResponsiveWrapper, useLayoutType, showSnackbar, closeWorkspace } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import styles from './provider-config-test-form.scss';
 import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sendTestMessage } from '../../api/providers.resource';
-import { closeOverlay } from '../../hooks/useOverlay';
 import { useLogsRecords } from '../../hooks/useLogs';
 
 const configTestFormSchema = z.object({
@@ -216,7 +215,7 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
         </Row>
       </Stack>
       <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
-        <Button className={styles.button} kind="secondary" onClick={closeOverlay}>
+        <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace('test-provider-config-form')}>
           {t('discard', 'Discard')}
         </Button>
         <Button className={styles.button} kind="primary" type="submit" disabled={isSubmitting}>

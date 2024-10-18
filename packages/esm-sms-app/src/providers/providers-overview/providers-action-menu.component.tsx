@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layer, OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { useLayoutType, showModal, ExtensionSlot, showSnackbar } from '@openmrs/esm-framework';
+import { useLayoutType, showModal, ExtensionSlot, showSnackbar, launchWorkspace } from '@openmrs/esm-framework';
 import styles from './providers-action-menu.scss';
-import { launchOverlay } from '../../hooks/useOverlay';
 import { type ProviderConfiguration } from '../../types';
 import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
 import { setAsDefaultConfig } from '../../api/providers.resource';
@@ -21,20 +20,20 @@ export const ConfigurationsActionMenu = ({ config }: configurationsActionMenuPro
     ? t(`edit${config.name}`, `Edit ${config.name}`)
     : t('editConfig', 'Edit provider configuration');
 
+  const testConfigWorkspaceTitle = config
+    ? t(`edit${config.name}`, `Test ${config.name}`)
+    : t('editConfig', 'Test provider configuration');
+
   const state = useMemo(() => ({ providerName: config.name, ...config }), [config]);
 
   const launchEditConfigForm = useCallback(
-    () => launchOverlay(editConfigWorkspaceTitle, <ExtensionSlot name="add-provider-config-form-slot" state={state} />),
+    () => launchWorkspace('add-provider-config-form', { workspaceTitle: editConfigWorkspaceTitle, ...state }),
     [editConfigWorkspaceTitle, state],
   );
 
   const launchConfigTestForm = useCallback(
-    () =>
-      launchOverlay(
-        `${t('test', 'Test')} ${config.name}`,
-        <ExtensionSlot name="test-provider-config-form-slot" state={state} />,
-      ),
-    [config.name, state, t],
+    () => launchWorkspace('test-provider-config-form', { workspaceTitle: testConfigWorkspaceTitle, ...state }),
+    [state, testConfigWorkspaceTitle],
   );
 
   const removeConfigPrompt = useCallback(() => {
@@ -50,7 +49,7 @@ export const ConfigurationsActionMenu = ({ config }: configurationsActionMenuPro
     await setAsDefaultConfig({ configs: providerConfigurations, defaultConfigName: config.name })
       .then(() => {
         mutateConfigs();
-        showSnackbar({ kind: 'success', title: t('successMakingDefault', 'Default config updated') });
+        showSnackbar({ kind: 'success', title: t('defaultConfigUpdated', 'Default config updated') });
       })
       .catch(() =>
         showSnackbar({
