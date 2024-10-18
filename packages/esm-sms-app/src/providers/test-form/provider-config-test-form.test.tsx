@@ -35,10 +35,6 @@ jest.mock('@openmrs/esm-framework', () => ({
   ResponsiveWrapper: ({ children }) => <div>{children}</div>,
 }));
 
-jest.mock('../../hooks/useOverlay', () => ({
-  closeOverlay: jest.fn(),
-}));
-
 jest.mock('../../hooks/useLogs', () => ({
   useLogsRecords: jest.fn(() => ({ mutateLogs: jest.fn() })),
 }));

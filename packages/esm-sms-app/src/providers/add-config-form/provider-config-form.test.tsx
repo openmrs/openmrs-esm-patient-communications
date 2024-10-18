@@ -49,10 +49,6 @@ jest.mock('@openmrs/esm-framework', () => ({
   ResponsiveWrapper: ({ children }) => <div>{children}</div>,
 }));
 
-jest.mock('../../hooks/useOverlay', () => ({
-  closeOverlay: jest.fn(),
-}));
-
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
 const mockSaveConfig = saveConfig as jest.Mock;
 

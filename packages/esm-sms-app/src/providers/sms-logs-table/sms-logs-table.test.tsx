@@ -10,17 +10,6 @@ jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),
 }));
 
-jest.mock('@openmrs/esm-framework', () => {
-  const actualModule = jest.requireActual('@openmrs/esm-framework');
-
-  return {
-    ...actualModule,
-    useConfig: jest.fn(),
-    useLayoutType: jest.fn(),
-    isDesktop: jest.fn(),
-  };
-});
-
 jest.mock('../../hooks/useLogs', () => ({
   useLogsRecords: jest.fn(),
 }));
