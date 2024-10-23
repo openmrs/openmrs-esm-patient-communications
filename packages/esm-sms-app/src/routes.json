@@ -13,11 +13,13 @@
   "workspaces": [
     {
       "name": "add-provider-config-form",
-      "component": "addProviderConfigForm"
+      "component": "addProviderConfigForm",
+      "title": "addProviderConfigWorkspaceTitle"
     },
     {
-      "name": "test-provider-config-form",
-      "component": "testProviderConfigForm"
+      "name": "provider-config-test-form",
+      "component": "providerConfigTestForm",
+      "title": "providerConfigTestWorkspaceTitle"
     }
   ],
   "pages": [

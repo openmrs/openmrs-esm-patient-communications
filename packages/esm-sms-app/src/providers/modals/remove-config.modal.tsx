@@ -5,12 +5,12 @@ import { showSnackbar } from '@openmrs/esm-framework';
 import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
 import { saveConfig } from '../../api/providers.resource';
 
-interface DeleteConditionModalProps {
+interface RemoveConfigModalProps {
   closeDeleteModal: () => void;
   configName: string;
 }
 
-const DeleteConditionModal: React.FC<DeleteConditionModalProps> = ({ closeDeleteModal, configName }) => {
+const RemoveConfigModal: React.FC<RemoveConfigModalProps> = ({ closeDeleteModal, configName }) => {
   const { t } = useTranslation();
   const { mutateConfigs, providerConfigurations } = useProviderConfigurations();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -41,7 +41,12 @@ const DeleteConditionModal: React.FC<DeleteConditionModalProps> = ({ closeDelete
 
   return (
     <div>
-      <ModalHeader closeModal={closeDeleteModal} title={t('removeConfiguration', 'Remove configuration')} />
+      <ModalHeader
+        closeModal={closeDeleteModal}
+        title={t('removeConfiguration', 'Remove {{configName}} configuration', {
+          configName,
+        })}
+      />
       <ModalBody>
         <p>{t('deleteModalConfirmationText', 'Are you sure you want to delete this configuration?')}</p>
       </ModalBody>
@@ -61,4 +66,4 @@ const DeleteConditionModal: React.FC<DeleteConditionModalProps> = ({ closeDelete
   );
 };
 
-export default DeleteConditionModal;
+export default RemoveConfigModal;

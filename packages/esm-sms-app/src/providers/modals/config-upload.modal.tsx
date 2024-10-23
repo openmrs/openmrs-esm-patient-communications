@@ -11,27 +11,28 @@ import {
   TextArea,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import styles from './upload-template-modal.scss';
 import { DocumentUnknown } from '@carbon/react/icons';
 import { uploadConfigTemplate } from '../../api/providers.resource';
 import { showSnackbar } from '@openmrs/esm-framework';
+import styles from './config-upload.scss';
 
 interface ErrorNotification {
   title: string;
   subtitle: string;
 }
 
-interface MediaUploaderComponentProps {
+interface ConfigUploadModalProps {
   closeModal: () => {};
   mutateTemplates: () => void;
 }
 
-const MediaUploaderComponent: React.FC<MediaUploaderComponentProps> = ({ closeModal, mutateTemplates }) => {
+const ConfigUploadModal: React.FC<ConfigUploadModalProps> = ({ closeModal, mutateTemplates }) => {
   const { t } = useTranslation();
 
   // Maximm config file size. Hard coding since we don't expect the file size to go beyond
   // 1MB. This value should be updated to match the actual maximum file size once needed in the future.
   const maxFileSize = 1;
+
   const [errorNotification, setErrorNotification] = useState<ErrorNotification>(null);
   const [fileToUpload, setFileToUpload] = useState<File>(null);
 
@@ -166,4 +167,4 @@ const MediaUploaderComponent: React.FC<MediaUploaderComponentProps> = ({ closeMo
   );
 };
 
-export default MediaUploaderComponent;
+export default ConfigUploadModal;

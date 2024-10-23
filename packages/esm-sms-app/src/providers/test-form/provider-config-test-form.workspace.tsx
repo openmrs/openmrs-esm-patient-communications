@@ -46,10 +46,10 @@ const configTestFormSchema = z.object({
 
 type ConfigTestFormData = z.infer<typeof configTestFormSchema>;
 
-interface ConfigTestFormProps {
+interface ProviderConfigTestFormProps {
   providerName: string;
 }
-const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
+const ProviderConfigTestForm: React.FC<ProviderConfigTestFormProps> = ({ providerName }) => {
   const { t } = useTranslation();
   const { mutateLogs } = useLogsRecords();
   const isTablet = useLayoutType() === 'tablet';
@@ -215,7 +215,7 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
         </Row>
       </Stack>
       <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
-        <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace('test-provider-config-form')}>
+        <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace('provider-config-test-form')}>
           {t('discard', 'Discard')}
         </Button>
         <Button className={styles.button} kind="primary" type="submit" disabled={isSubmitting}>
@@ -230,4 +230,4 @@ const ConfigTestForm: React.FC<ConfigTestFormProps> = ({ providerName }) => {
   );
 };
 
-export default ConfigTestForm;
+export default ProviderConfigTestForm;

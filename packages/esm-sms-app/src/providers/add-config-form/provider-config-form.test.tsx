@@ -2,7 +2,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { renderWithSwr } from 'tools';
-import AddProviderConfigForm from './provider-config-form.component';
+import AddProviderConfigForm from './provider-config-form.workspace';
 import { openmrsFetch, showSnackbar } from '@openmrs/esm-framework';
 import { saveConfig } from '../../api/providers.resource';
 

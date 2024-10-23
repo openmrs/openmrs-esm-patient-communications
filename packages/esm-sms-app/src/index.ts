@@ -14,25 +14,21 @@ export const providersDashboard = getAsyncLifecycle(() => import('./providers/pr
 
 export const smsAdminCardLink = getAsyncLifecycle(() => import('./sms-admin-card-link.component'), options);
 
-export const testProviderConfigForm = getAsyncLifecycle(
+// t('providerConfigTestWorkspaceTitle', 'Test configuration');
+export const providerConfigTestForm = getAsyncLifecycle(
   () => import('./providers/test-form/provider-config-test-form.workspace'),
   options,
 );
 
+// t('addProviderConfigWorkspaceTitle', 'Add Provider');
 export const addProviderConfigForm = getAsyncLifecycle(
-  () => import('./providers/add-config-form/provider-config-form.component'),
+  () => import('./providers/add-config-form/provider-config-form.workspace'),
   options,
 );
 
-export const configUploadModal = getAsyncLifecycle(
-  () => import('./providers/modals/config-upload-modal.component'),
-  options,
-);
+export const configUploadModal = getAsyncLifecycle(() => import('./providers/modals/config-upload.modal'), options);
 
-export const removeConfigModal = getAsyncLifecycle(
-  () => import('./providers/modals/remove-config-modal.component'),
-  options,
-);
+export const removeConfigModal = getAsyncLifecycle(() => import('./providers/modals/remove-config.modal'), options);
 
 export function startupApp() {
   defineConfigSchema(moduleName, configSchema);

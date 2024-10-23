@@ -44,13 +44,7 @@ const ProvidersListTable = () => {
   const [pageSize, setPageSize] = useState();
   const { providerConfigurations, isLoadingConfigs, error, isValidatingConfigs } = useProviderConfigurations();
 
-  const launchAddProviderConfigForm = useCallback(
-    () =>
-      launchWorkspace('add-provider-config-form', {
-        workspaceTitle: t('addProviderConfigFormWorkspaceTitle', 'Add Provider'),
-      }),
-    [t],
-  );
+  const launchAddProviderConfigForm = useCallback(() => launchWorkspace('add-provider-config-form'), []);
 
   const headers = useMemo(
     () => [
@@ -242,20 +236,25 @@ export default ProvidersListTable;
 
 function ConfigDetails({ config }) {
   const { t } = useTranslation();
-
-  const editConfigWorkspaceTitle = config
-    ? t(`edit${config.name}`, `Edit ${config.name}`)
-    : t('editConfig', 'Edit provider configuration');
-
   const state = useMemo(() => ({ providerName: config.name, ...config }), [config]);
 
   const launchEditProviderConfigForm = useCallback(() => {
-    launchWorkspace('add-provider-config-form-slot', { workspaceTitle: editConfigWorkspaceTitle, ...state });
-  }, [editConfigWorkspaceTitle, state]);
+    launchWorkspace('add-provider-config-form', {
+      workspaceTitle: t('editConfig', 'Edit {{ configName }}', {
+        configName: config.name,
+      }),
+      ...state,
+    });
+  }, [config.name, state, t]);
 
   const launchConfigTestForm = useCallback(
     () =>
-      launchWorkspace('test-provider-config-form', { workspaceTitle: `${t('test', 'Test')} ${config.name}`, ...state }),
+      launchWorkspace('provider-config-test-form', {
+        workspaceTitle: t('testConfig', 'Test {{ configName }}', {
+          configName: config.name,
+        }),
+        ...state,
+      }),
     [config.name, state, t],
   );
 
@@ -294,7 +293,7 @@ function ConfigDetails({ config }) {
         </div>
       </div>
       <Button kind="primary" onClick={launchConfigTestForm}>
-        {t('Test', 'Test')}
+        {t('test', 'Test')}
       </Button>
       <Button kind="secondary" onClick={launchEditProviderConfigForm}>
         {t('edit', 'Edit')}

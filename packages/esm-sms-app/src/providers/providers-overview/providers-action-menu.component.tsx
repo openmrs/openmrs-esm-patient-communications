@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layer, OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { useLayoutType, showModal, ExtensionSlot, showSnackbar, launchWorkspace } from '@openmrs/esm-framework';
-import styles from './providers-action-menu.scss';
+import { useLayoutType, showModal, showSnackbar, launchWorkspace } from '@openmrs/esm-framework';
 import { type ProviderConfiguration } from '../../types';
 import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
 import { setAsDefaultConfig } from '../../api/providers.resource';
+import styles from './providers-action-menu.scss';
 
 interface configurationsActionMenuProps {
   config: ProviderConfiguration;
@@ -16,24 +16,28 @@ export const ConfigurationsActionMenu = ({ config }: configurationsActionMenuPro
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
   const isDefaultConfig = config.name === defaultConfig;
-  const editConfigWorkspaceTitle = config
-    ? t(`edit${config.name}`, `Edit ${config.name}`)
-    : t('editConfig', 'Edit provider configuration');
-
-  const testConfigWorkspaceTitle = config
-    ? t(`edit${config.name}`, `Test ${config.name}`)
-    : t('editConfig', 'Test provider configuration');
-
   const state = useMemo(() => ({ providerName: config.name, ...config }), [config]);
 
   const launchEditConfigForm = useCallback(
-    () => launchWorkspace('add-provider-config-form', { workspaceTitle: editConfigWorkspaceTitle, ...state }),
-    [editConfigWorkspaceTitle, state],
+    () =>
+      launchWorkspace('add-provider-config-form', {
+        workspaceTitle: t('editConfig', 'Edit {{configName}}', {
+          configName: config.name,
+        }),
+        ...state,
+      }),
+    [t, config.name, state],
   );
 
   const launchConfigTestForm = useCallback(
-    () => launchWorkspace('test-provider-config-form', { workspaceTitle: testConfigWorkspaceTitle, ...state }),
-    [state, testConfigWorkspaceTitle],
+    () =>
+      launchWorkspace('provider-config-test-form', {
+        workspaceTitle: t('testConfig', 'Test {{ configName }}', {
+          configName: config.name,
+        }),
+        ...state,
+      }),
+    [state, t, config.name],
   );
 
   const removeConfigPrompt = useCallback(() => {
