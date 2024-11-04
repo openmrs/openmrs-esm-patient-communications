@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json.openmrs.org/routes.schema.json",
+  "backendDependencies": {},
+  "extensions": [
+    {
+      "name": "sms-providers-settings-admin-card-link",
+      "component": "smsAdminCardLink",
+      "slot": "system-admin-page-card-link-slot",
+      "online": true,
+      "offline": true
+    }
+  ],
+  "workspaces": [
+    {
+      "name": "add-provider-config-form",
+      "component": "addProviderConfigForm",
+      "title": "addProviderConfigWorkspaceTitle"
+    },
+    {
+      "name": "provider-config-test-form",
+      "component": "providerConfigTestForm",
+      "title": "providerConfigTestWorkspaceTitle"
+    }
+  ],
+  "pages": [
+    {
+      "component": "providersDashboard",
+      "route": "provider-settings",
+      "online": true,
+      "offline": true,
+      "order": 1
+    }
+  ],
+  "modals": [
+    {
+      "name": "config-upload-modal",
+      "component": "configUploadModal"
+    },
+    {
+      "name": "remove-config-modal",
+      "component": "removeConfigModal"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 module.exports = {
-  contextSeparator: '_',
+  contextSeparator: false,
   // Key separator used in your translation keys
 
   createOldCatalogs: false,
@@ -8,7 +8,7 @@ module.exports = {
   defaultNamespace: 'translations',
   // Default namespace used in your i18next config
 
-  defaultValue: '',
+  defaultValue: (_, __, key) => key,
   // Default value to give to empty keys
   // You may also specify a function accepting the locale, namespace, and key as arguments
 
@@ -39,7 +39,7 @@ module.exports = {
     default: ['JavascriptLexer'],
   },
 
-  lineEnding: 'auto',
+  lineEnding: 'lf',
   // Control the line ending. See options at https://github.com/ryanve/eol
 
   locales: ['en'],
@@ -65,6 +65,10 @@ module.exports = {
   sort: true,
   // Whether or not to sort the catalog
 
+  skipDefaultValues: false,
+  // Whether to ignore default values
+  // You may also specify a function accepting the locale and namespace as arguments
+  
   useKeysAsDefaultValue: false,
   // Whether to use the keys as the default value; ex. "Hello": "Hello", "World": "World"
   // This option takes precedence over the `defaultValue` and `skipDefaultValues` options
