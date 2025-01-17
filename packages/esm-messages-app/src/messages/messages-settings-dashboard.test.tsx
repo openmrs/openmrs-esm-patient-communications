@@ -5,15 +5,18 @@ import { mockMessageTemplates } from '__mocks__';
 import MessagesDashboard from './messages-settings-dashboard.component';
 import { useMessagesTemplates } from '../hooks/useMessagesTemplates';
 
-jest.mock('@openmrs/esm-framework', () => ({
-  ...jest.requireActual('@openmrs/esm-framework'),
-  useConfig: jest.fn(() => ({
-    endOfMessageType: [7, 8],
-  })),
-}));
+jest.mock('@openmrs/esm-framework', () => {
+  return {
+    __esModule: true,
+    useConfig: () => ({ endOfMessageType: [7, 8] }),
+    useLayoutType: jest.fn(() => 'desktop'),
+  };
+});
+
 jest.mock('../hooks/useMessagesTemplates', () => ({
   useMessagesTemplates: jest.fn(),
 }));
+
 describe('Messages Dashboard', () => {
   beforeAll(() => {
     window.matchMedia = jest.fn().mockImplementation((query) => ({
