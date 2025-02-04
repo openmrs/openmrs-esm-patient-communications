@@ -6,8 +6,6 @@ import {
   InlineLoading,
   DataTable,
   DataTableSkeleton,
-  Dropdown,
-  Layer,
   Pagination,
   TableContainer,
   Table,
@@ -24,7 +22,6 @@ import { useLogsRecords } from '../../hooks/useLogs';
 import { EmptyState } from '../empty-state/empty-state.component';
 import styles from './sms-logs-table.scss';
 import { Search } from '@carbon/react';
-import { DatePicker } from '@carbon/react';
 
 const SmslogsTable = () => {
   const { t } = useTranslation();
@@ -34,15 +31,9 @@ const SmslogsTable = () => {
   const isTablet = !isDesktop;
   const headerTitle = t('smsLogs', 'SMS Logs');
   const pageSizes = [10, 20, 30, 40, 50];
-  const [pageSize, setPageSize] = useState();
+  const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('All');
   const { smsLogs, isLoadingLogs, isValidatingLogs, mutateLogs, error } = useLogsRecords();
-
-  const phoneNumberFilters = useMemo(() => {
-    const phoneNumbers = smsLogs?.map((log) => log.phoneNumber);
-    return Array.from(new Set(phoneNumbers));
-  }, [smsLogs]);
 
   /**** Comments below are used for translating keys in logs table, remove with caution *****/
   // t('phoneNumber', 'Phone number')
@@ -72,21 +63,14 @@ const SmslogsTable = () => {
   );
 
   const filteredLogs = useMemo(() => {
-    if ((!filter || filter === 'All') && !searchTerm) {
-      return smsLogs;
-    }
-
     let logs = smsLogs;
-    if (filter && filter !== 'All') {
-      logs = logs.filter((log) => log.phoneNumber === filter);
-    }
 
     if (searchTerm) {
-      logs = logs.filter((log) => log.messageContent.toLowerCase().includes(searchTerm.toLowerCase()));
+      logs = logs.filter((log) => log.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
     return logs;
-  }, [filter, searchTerm, smsLogs]);
+  }, [searchTerm, smsLogs]);
 
   const tableRows = useMemo(
     () =>
@@ -108,28 +92,13 @@ const SmslogsTable = () => {
         <CardHeader title={headerTitle}>
           <span>{isValidatingLogs ? <InlineLoading /> : null}</span>
           <div className={styles.rightMostFlexContainer}>
-            <div className={styles.filterContainer}>
-              <Dropdown
-                id="smsLogsFilter"
-                initialSelectedItem={'All'}
-                label=""
-                titleText={t('fitlerLogsByNumber', 'Fitler logs by phone number') + ':'}
-                type="inline"
-                items={['All', ...phoneNumberFilters]}
-                onChange={({ selectedItem }) => setFilter(selectedItem.value)}
-                size={isTablet ? 'lg' : 'sm'}
-              />
-            </div>
-            <div>
-              <DatePicker />
-            </div>
             <div>
               <Search
                 size={isTablet ? 'lg' : 'sm'}
-                placeholder="Search for a message"
+                placeholder="Search for a phone number"
                 labelText="Search"
                 closeButtonLabelText="Clear search input"
-                id="message-search"
+                id="phone-search"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
@@ -194,7 +163,7 @@ const SmslogsTable = () => {
             page={currentPage}
             pageSize={pageSize}
             pageSizes={pageSizes}
-            totalItems={paginatedLogs?.length}
+            totalItems={tableRows?.length}
             className={styles.pagination}
             size={isDesktop ? 'sm' : 'lg'}
             onChange={({ pageSize: newPageSize, page: newPage }) => {
