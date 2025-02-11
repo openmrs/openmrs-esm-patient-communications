@@ -14,7 +14,7 @@ yarn  # to install dependencies
 yarn start --sources 'packages/esm-sms-app' / 'packages/esm-messages-app' # to run a specific application
 ```
 
-## Specify to connect to the "Connect for life" backend
+## Specify to connect to the "Connect for Life" backend
 
 for example
 
