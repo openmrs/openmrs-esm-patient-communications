@@ -19,6 +19,6 @@ yarn start --sources 'packages/esm-sms-app' / 'packages/esm-messages-app' # to r
 for example
 
 ```sh
-yarn start --sources=packages/esm-messages-app --port=5000 --backend=https://demo.jnj.connect-for-life.org
+yarn start --sources=packages/esm-messages-app --backend=https://demo.jnj.connect-for-life.org
 ```
 
