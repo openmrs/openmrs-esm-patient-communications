@@ -12,8 +12,6 @@ export function useSMSLogs(
   const getKey = (pageIndex, previousPageData) => {
     if (previousPageData && !previousPageData.rows.length) return null;
 
-    console.log('pageIndex->', pageIndex);
-
     let url = `/ws/sms/log?page=${pageNumber}&rows=${pageSize}&sortColumn=${sortColumn}&sortDirection=${sortDirection}`;
 
     if (phoneNumber.trim() !== '') {

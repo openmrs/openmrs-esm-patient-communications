@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import SmslogsTable from './sms-logs-table.component';
 import { useTranslation } from 'react-i18next';
 import { useConfig, usePagination, useLayoutType } from '@openmrs/esm-framework';

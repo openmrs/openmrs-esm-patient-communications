@@ -4,7 +4,6 @@ import { userEvent } from '@testing-library/user-event';
 import { renderWithSwr } from 'tools';
 import ConfigTestForm from './provider-config-test-form.workspace';
 import { openmrsFetch } from '@openmrs/esm-framework';
-import { saveConfig, sendTestMessage } from '../../api/providers.resource';
 
 jest.mock('zod', () => {
   const originalModule = jest.requireActual('zod');
@@ -36,12 +35,10 @@ jest.mock('@openmrs/esm-framework', () => ({
 }));
 
 jest.mock('../../hooks/useLogs', () => ({
-  useLogsRecords: jest.fn(() => ({ mutateLogs: jest.fn() })),
+  useSMSLogs: jest.fn(() => ({ mutateLogs: jest.fn() })),
 }));
 
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
-const mockUseConfig = saveConfig as jest.Mock;
-const mockSendTestMessage = sendTestMessage as jest.Mock;
 
 describe('AddProviderConfigForm', () => {
   it('Renders form fields correctly', async () => {
