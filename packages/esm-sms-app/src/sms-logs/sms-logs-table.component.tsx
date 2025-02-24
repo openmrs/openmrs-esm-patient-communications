@@ -17,7 +17,7 @@ import {
 } from '@carbon/react';
 import { useConfig, useLayoutType, isDesktop as isDesktopLayout } from '@openmrs/esm-framework';
 import { type ConfigObject } from '../config-schema';
-import { useSMSLogs } from '../hooks/useLogs';
+import { useSmsLogs } from '../hooks/useLogs';
 import { EmptyState } from '../providers/empty-state/empty-state.component';
 import styles from './sms-logs-table.scss';
 import { Search } from '@carbon/react';
@@ -35,7 +35,7 @@ const SmsLogsTable = () => {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [rawSearchTerm, setRawSearchTerm] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const { smsLogs, smsLogsTotalCount, isLoadingLogs, isValidatingLogs, error } = useSMSLogs(
+  const { smsLogs, smsLogsTotalCount, isLoadingLogs, isValidatingLogs, error } = useSmsLogs(
     currentPage,
     pageSize,
     searchTerm,

@@ -23,7 +23,7 @@ export const EmptyState: React.FC<EmptyStateProps> = (props) => {
         <p className={styles.content}>{t('emptyTableStateText', 'There are no SMS logs to display')}</p>
         <p className={styles.action}>
           {props.launchForm && (
-            <Button onClick={() => props.launchForm()} kind="ghost" size={isTablet ? 'lg' : 'sm'}>
+            <Button onClick={props.launchForm} kind="ghost" size={isTablet ? 'lg' : 'sm'}>
               {t('record', 'Record')} {props.displayText.toLowerCase()}
             </Button>
           )}

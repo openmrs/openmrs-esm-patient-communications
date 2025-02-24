@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import SmslogsTable from './sms-logs-table.component';
 import { useTranslation } from 'react-i18next';
 import { useConfig, usePagination, useLayoutType } from '@openmrs/esm-framework';
-import { useSMSLogs } from '../hooks/useLogs';
+import { useSmsLogs } from '../hooks/useLogs';
 import { renderWithSwr } from 'tools';
 
 jest.mock('react-i18next', () => ({
@@ -11,7 +11,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('../hooks/useLogs', () => ({
-  useSMSLogs: jest.fn(),
+  useSmsLogs: jest.fn(),
 }));
 
 describe('SmslogsTable', () => {
@@ -19,7 +19,7 @@ describe('SmslogsTable', () => {
   const mockUseConfig = useConfig as jest.Mock;
   const mockUsePagination = usePagination as jest.Mock;
   const mockUseLayoutType = useLayoutType as jest.Mock;
-  const mockUseLogsRecords = useSMSLogs as jest.Mock;
+  const mockUseLogsRecords = useSmsLogs as jest.Mock;
 
   beforeEach(() => {
     mockUseTranslation.mockReturnValue({ t: (key: string, value: string) => value });

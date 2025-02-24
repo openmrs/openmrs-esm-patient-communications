@@ -35,7 +35,7 @@ jest.mock('@openmrs/esm-framework', () => ({
 }));
 
 jest.mock('../../hooks/useLogs', () => ({
-  useSMSLogs: jest.fn(() => ({ mutateLogs: jest.fn() })),
+  useSmsLogs: jest.fn(() => ({ mutateLogs: jest.fn() })),
 }));
 
 const mockOpenmrsFetch = openmrsFetch as jest.Mock;
