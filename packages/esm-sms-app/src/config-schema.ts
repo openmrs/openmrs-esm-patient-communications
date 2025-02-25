@@ -24,7 +24,7 @@ export const configSchema = {
   smsLogsColumns: {
     _type: Type.Array,
     _description: 'Columns to display in logs table. Each value should be a property of SMSlogs record type',
-    _default: ['timestamp', 'messageContent', 'config', 'phoneNumber', 'providerId'],
+    _default: ['phoneNumber', 'messageContent', 'timestamp', 'config', 'deliveryStatus', 'providerId'],
     _validators: [oneOf(allowedProperties)],
   },
 };

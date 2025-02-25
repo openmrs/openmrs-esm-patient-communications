@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import ProvidersDashboard from './providers-dashboard.component';
 import { useTranslation } from 'react-i18next';
 import { showModal, useWorkspaces } from '@openmrs/esm-framework';

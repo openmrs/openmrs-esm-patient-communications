@@ -1,28 +1,40 @@
-import useSWRInfinite from 'swr/infinite';
-import { openmrsFetch, useConfig, type FetchResponse } from '@openmrs/esm-framework';
-import { type SMSLog, type SMSLogsResponse } from '../types';
-import { type ConfigObject } from '../config-schema';
+import { openmrsFetch, type FetchResponse } from '@openmrs/esm-framework';
+import type { SMSLogsResponse } from '../types';
+import useSWR from 'swr';
 
-export function useLogsRecords() {
-  const getKey = (pageIndex, previousPageData) => {
-    if (previousPageData && !previousPageData.rows.length) return null;
+export function useSmsLogs(
+  pageNumber: number,
+  pageSize: number,
+  phoneNumber: string = '',
+  sortColumn: 'id' | 'timestamp' | 'deliveryStatus' = 'id',
+  sortDirection: 'asc' | 'desc' = 'desc',
+) {
+  const urlParams = new URLSearchParams({
+    page: String(pageNumber),
+    rows: String(pageSize),
+    sortColumn: sortColumn,
+    sortDirection: sortDirection,
+  });
 
-    return `/ws/sms/log?page=${pageIndex + 1}`;
-  };
+  let url = `/ws/sms/log?${urlParams.toString()}`;
 
-  const { data, error, size, setSize, isValidating, isLoading, mutate } = useSWRInfinite<
-    FetchResponse<SMSLogsResponse>,
-    Error
-  >(getKey, openmrsFetch);
+  if (phoneNumber.trim() !== '') {
+    url += `&phoneNumber=${encodeURIComponent(phoneNumber)}`;
+  }
 
-  const smsLogs: SMSLog[] = data ? [].concat(...data.map((page) => page.data.rows)) : [];
+  const { data, error, isValidating, isLoading, mutate } = useSWR<FetchResponse<SMSLogsResponse>, Error>(
+    url,
+    openmrsFetch,
+  );
+
+  const responseData = data ? data.data : null;
 
   return {
-    smsLogs,
+    smsLogs: responseData?.rows,
+    smsLogsTotalCount: responseData?.totalRecords,
     isLoadingLogs: isLoading,
     isValidatingLogs: isValidating,
     mutateLogs: mutate,
-    setSize,
     error,
   };
 }

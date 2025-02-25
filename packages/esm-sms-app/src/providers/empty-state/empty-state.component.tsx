@@ -19,18 +19,11 @@ export const EmptyState: React.FC<EmptyStateProps> = (props) => {
   return (
     <Layer>
       <Tile className={styles.tile}>
-        <div className={isTablet ? styles.tabletHeading : styles.desktopHeading}>
-          <h4>{props.headerTitle}</h4>
-        </div>
         <EmptyDataIllustration />
-        <p className={styles.content}>
-          {t('emptyTableStateText', 'There are no {{displayText}} to display', {
-            displayText: props.displayText.toLowerCase(),
-          })}
-        </p>
+        <p className={styles.content}>{t('emptyTableStateText', 'There are no SMS logs to display')}</p>
         <p className={styles.action}>
           {props.launchForm && (
-            <Button onClick={() => props.launchForm()} kind="ghost" size={isTablet ? 'lg' : 'sm'}>
+            <Button onClick={props.launchForm} kind="ghost" size={isTablet ? 'lg' : 'sm'}>
               {t('record', 'Record')} {props.displayText.toLowerCase()}
             </Button>
           )}

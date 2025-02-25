@@ -49,7 +49,6 @@ jest.mock('@openmrs/esm-framework', () => ({
   ResponsiveWrapper: ({ children }) => <div>{children}</div>,
 }));
 
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
 const mockSaveConfig = saveConfig as jest.Mock;
 
 describe('AddProviderConfigForm', () => {

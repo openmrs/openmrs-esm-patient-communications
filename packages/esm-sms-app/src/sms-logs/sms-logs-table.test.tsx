@@ -1,17 +1,17 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import SmslogsTable from './sms-logs-table.component';
 import { useTranslation } from 'react-i18next';
 import { useConfig, usePagination, useLayoutType } from '@openmrs/esm-framework';
-import { useLogsRecords } from '../../hooks/useLogs';
+import { useSmsLogs } from '../hooks/useLogs';
 import { renderWithSwr } from 'tools';
 
 jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),
 }));
 
-jest.mock('../../hooks/useLogs', () => ({
-  useLogsRecords: jest.fn(),
+jest.mock('../hooks/useLogs', () => ({
+  useSmsLogs: jest.fn(),
 }));
 
 describe('SmslogsTable', () => {
@@ -19,12 +19,12 @@ describe('SmslogsTable', () => {
   const mockUseConfig = useConfig as jest.Mock;
   const mockUsePagination = usePagination as jest.Mock;
   const mockUseLayoutType = useLayoutType as jest.Mock;
-  const mockUseLogsRecords = useLogsRecords as jest.Mock;
+  const mockUseLogsRecords = useSmsLogs as jest.Mock;
 
   beforeEach(() => {
     mockUseTranslation.mockReturnValue({ t: (key: string, value: string) => value });
     mockUseConfig.mockReturnValue({
-      configurationPageSize: [10, 20, 30, 40, 50],
+      configurationPageSize: [10, 20, 50, 100],
       smsLogsColumns: ['phoneNumber', 'messageContent', 'config', 'timestamp', 'providerId'],
     });
     mockUseLayoutType.mockReturnValue('desktop');

@@ -7,7 +7,7 @@ import { Export } from '@carbon/react/icons';
 import { WorkspaceContainer, showModal, useWorkspaces } from '@openmrs/esm-framework';
 import { useProviderConfigTemplates } from '../hooks/useProviderConfigTemplates';
 import ProvidersListTable from './providers-overview/providers-overview.component';
-import SmslogsTable from './sms-logs-table/sms-logs-table.component';
+import SmsLogsTable from '../sms-logs/sms-logs-table.component';
 import styles from './providers-dashboard.scss';
 
 const ProvidersDashboard: React.FC = () => {
@@ -47,7 +47,7 @@ const ProvidersDashboard: React.FC = () => {
                 </TabPanel>
                 <TabPanel>
                   <div className={styles.tabPanel}>
-                    <SmslogsTable />
+                    <SmsLogsTable />
                   </div>
                 </TabPanel>
               </TabPanels>

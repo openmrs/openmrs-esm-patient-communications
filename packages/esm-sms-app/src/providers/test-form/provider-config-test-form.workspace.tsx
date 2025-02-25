@@ -22,7 +22,7 @@ import { z } from 'zod';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sendTestMessage } from '../../api/providers.resource';
-import { useLogsRecords } from '../../hooks/useLogs';
+import { useSmsLogs } from '../../hooks/useLogs';
 
 const configTestFormSchema = z.object({
   deliveryTime: z.number(),
@@ -51,7 +51,7 @@ interface ProviderConfigTestFormProps {
 }
 const ProviderConfigTestForm: React.FC<ProviderConfigTestFormProps> = ({ providerName }) => {
   const { t } = useTranslation();
-  const { mutateLogs } = useLogsRecords();
+  const { mutateLogs } = useSmsLogs(1, 100);
   const isTablet = useLayoutType() === 'tablet';
 
   const {
