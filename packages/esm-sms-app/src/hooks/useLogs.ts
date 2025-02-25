@@ -6,8 +6,8 @@ export function useSmsLogs(
   pageNumber: number,
   pageSize: number,
   phoneNumber: string = '',
-  sortColumn: string = 'id',
-  sortDirection: string = 'desc',
+  sortColumn: 'id' | 'timestamp' | 'deliveryStatus' = 'id',
+  sortDirection: 'asc' | 'desc' = 'desc',
 ) {
   const urlParams = new URLSearchParams({
     page: String(pageNumber),
