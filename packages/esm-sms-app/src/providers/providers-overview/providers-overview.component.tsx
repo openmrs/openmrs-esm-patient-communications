@@ -1,8 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { CardHeader, ErrorState } from '@openmrs/esm-patient-common-lib';
-import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
-import { useConfigurationsSorting } from '../utils';
 import {
   Button,
   InlineLoading,
@@ -17,6 +15,9 @@ import {
   TableBody,
   TableCell,
   TableExpandHeader,
+  TableExpandRow,
+  TableExpandedRow,
+  Tag,
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
@@ -26,14 +27,15 @@ import {
   isDesktop as isDesktopLayout,
   showModal,
   launchWorkspace,
+  CardHeader,
+  ErrorState,
 } from '@openmrs/esm-framework';
 import { ConfigurationsActionMenu } from './providers-action-menu.component';
-import { TableExpandRow } from '@carbon/react';
-import { TableExpandedRow } from '@carbon/react';
 import { EmptyState } from '../empty-state/empty-state.component';
-import { Tag } from '@carbon/react';
+import { useConfigurationsSorting } from '../utils';
+import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
+import { type ConfigurationTableDataRow } from '../../types';
 import styles from './providers-overview.scss';
-import classNames from 'classnames';
 
 const ProvidersListTable = () => {
   const { t } = useTranslation();
@@ -41,7 +43,7 @@ const ProvidersListTable = () => {
   const isDesktop = isDesktopLayout(layout);
   const isTablet = !isDesktop;
   const pageSizes = [10, 20, 30, 40, 50];
-  const [pageSize, setPageSize] = useState();
+  const [pageSize, setPageSize] = useState<number>(pageSizes[0]);
   const { providerConfigurations, isLoadingConfigs, error, isValidatingConfigs } = useProviderConfigurations();
 
   const launchAddProviderConfigForm = useCallback(() => launchWorkspace('add-provider-config-form'), []);
@@ -55,7 +57,7 @@ const ProvidersListTable = () => {
         sortFunc: (valueA, valueB) => valueA.display?.localeCompare(valueB.display),
       },
       {
-        key: 'template',
+        key: 'templateName',
         header: t('template', 'Template'),
         isSortable: true,
         sortFunc: (valueA, valueB) => valueA.display?.localeCompare(valueB.display),
@@ -70,17 +72,21 @@ const ProvidersListTable = () => {
         ...config,
         id: `config-${index}`,
         configuration: config.name,
-        template: config.templateName,
       })),
     [providerConfigurations],
   );
 
-  const { sortedRows, sortRow } = useConfigurationsSorting(headers, tableRows);
+  const { sortedRows, onHeaderClick } = useConfigurationsSorting(headers, tableRows);
 
   const { results: paginatedConfigs, paginated, goTo, currentPage } = usePagination(sortedRows, pageSize);
 
-  if (isLoadingConfigs) return <DataTableSkeleton role="progressbar" compact={isDesktop} zebra />;
-  if (error) return <ErrorState error={error} headerTitle={t('configurations', 'Configurations')} />;
+  if (isLoadingConfigs) {
+    return <DataTableSkeleton role="progressbar" compact={isDesktop} zebra />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} headerTitle={t('configurations', 'Configurations')} />;
+  }
 
   if (providerConfigurations.length > 0) {
     return (
@@ -107,7 +113,6 @@ const ProvidersListTable = () => {
           size={isTablet ? 'lg' : 'sm'}
           useZebraStyles
           overflowMenuOnHover={isDesktop}
-          sortRow={sortRow}
         >
           {({
             rows,
@@ -117,75 +122,106 @@ const ProvidersListTable = () => {
             getRowProps,
             getExpandedRowProps,
             getExpandHeaderProps,
-          }) => (
-            <>
-              <TableContainer className={styles.tableContainer}>
-                <Table {...getTableProps()}>
-                  <TableHead>
-                    <TableRow>
-                      <TableExpandHeader enableToggle {...getExpandHeaderProps()} />
-                      {headers.map((header, i) => (
-                        <TableHeader className={styles.tableHeader} key={i} {...getHeaderProps({ header })}>
-                          {header.header}
-                        </TableHeader>
-                      ))}
-                      <TableExpandHeader />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => {
-                      return (
-                        <React.Fragment key={row.id}>
-                          <TableExpandRow {...getRowProps({ row })}>
-                            {row.cells.map((cell, index) => {
-                              return index === 0 ? (
-                                <>
-                                  <TableCell key={cell.id}>
-                                    {cell.value}
-                                    {(() => {
-                                      const config = tableRows.find((r) => `${r.id}:configuration` === row.cells[0].id);
+          }) => {
+            const expandedRowIds = rows.map((row) => getExpandedRowProps({ row }).id).join(' ');
+            const expandHeaderProps = getExpandHeaderProps();
 
-                                      if (config.isDefaultConfig) {
-                                        return (
-                                          <Tag type="green" className={classNames(styles.tag, 'cds--label')}>
-                                            {t('default', 'Default')}
-                                          </Tag>
-                                        );
-                                      }
-                                    })()}
-                                  </TableCell>
-                                </>
-                              ) : (
-                                <>
-                                  <TableCell key={cell.id}>{cell.value}</TableCell>
-                                </>
-                              );
-                            })}
-                            <TableCell className="cds--table-column-menu">
-                              <ConfigurationsActionMenu
-                                config={tableRows.find((r) => `${r.id}:configuration` === row.cells[0].id)}
-                              />
-                            </TableCell>
-                          </TableExpandRow>
-                          {row.isExpanded ? (
-                            <TableExpandedRow
-                              {...getExpandedRowProps({ row })}
-                              className={styles.expandedRow}
-                              colSpan={headers.length + 2}
+            return (
+              <>
+                <TableContainer className={styles.tableContainer}>
+                  <Table {...getTableProps()}>
+                    <TableHead>
+                      <TableRow>
+                        {(() => {
+                          const { onExpand, ...restExpandHeaderProps } = expandHeaderProps;
+                          return (
+                            <TableExpandHeader
+                              enableToggle
+                              aria-controls={expandedRowIds}
+                              {...restExpandHeaderProps}
+                              onExpand={onExpand as unknown as React.MouseEventHandler<HTMLButtonElement>}
+                            />
+                          );
+                        })()}
+                        {headers.map((header, i) => {
+                          const headerProps = getHeaderProps({ header, onClick: onHeaderClick });
+                          const { onClick, ...restHeaderProps } = headerProps;
+                          return (
+                            <TableHeader
+                              className={styles.tableHeader}
+                              key={i}
+                              {...restHeaderProps}
+                              onClick={onClick as unknown as React.MouseEventHandler<HTMLButtonElement>}
                             >
-                              <ConfigDetails
-                                config={tableRows.find((r) => `${r.id}:configuration` === row.cells[0].id)}
-                              />
-                            </TableExpandedRow>
-                          ) : (
-                            <TableExpandedRow className={styles.hiddenRow} colSpan={headers.length + 2} />
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                              {header.header}
+                            </TableHeader>
+                          );
+                        })}
+                        <TableHeader aria-label={t('actions', 'Actions')} />
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {rows.map((row) => {
+                        const expandedRowProps = getExpandedRowProps({ row });
+                        const rowConfig = tableRows.find((config) => `${config.id}:configuration` === row.cells[0].id);
+                        const rowProps = getRowProps({ row });
+
+                        return (
+                          <React.Fragment key={row.id}>
+                            {(() => {
+                              const { onExpand, ...restRowProps } = rowProps;
+                              return (
+                                <TableExpandRow
+                                  {...restRowProps}
+                                  isExpanded={rowProps.isExpanded ?? false}
+                                  aria-controls={expandedRowProps.id}
+                                  onExpand={onExpand as unknown as React.MouseEventHandler<HTMLButtonElement>}
+                                >
+                                  {row.cells.map((cell, index) => {
+                                    return index === 0 ? (
+                                      <>
+                                        <TableCell key={cell.id}>
+                                          {cell.value}
+                                          {(() => {
+                                            if (rowConfig?.isDefaultConfig) {
+                                              return (
+                                                <Tag type="green" className={classNames(styles.tag, 'cds--label')}>
+                                                  {t('default', 'Default')}
+                                                </Tag>
+                                              );
+                                            }
+                                          })()}
+                                        </TableCell>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                                      </>
+                                    );
+                                  })}
+                                  <TableCell className="cds--table-column-menu">
+                                    {rowConfig ? <ConfigurationsActionMenu config={rowConfig} /> : null}
+                                  </TableCell>
+                                </TableExpandRow>
+                              );
+                            })()}
+                            {row.isExpanded ? (
+                              <TableExpandedRow
+                                {...expandedRowProps}
+                                className={styles.expandedRow}
+                                colSpan={headers.length + 2}
+                              >
+                                {rowConfig ? <ConfigDetails config={rowConfig} /> : null}
+                              </TableExpandedRow>
+                            ) : (
+                              <TableExpandedRow className={styles.hiddenRow} colSpan={headers.length + 2} />
+                            )}
+                          </React.Fragment>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
 
               {rows.length === 0 ? (
                 <div className={styles.tileContainer}>
@@ -196,8 +232,9 @@ const ProvidersListTable = () => {
                   </Tile>
                 </div>
               ) : null}
-            </>
-          )}
+              </>
+            );
+          }}
         </DataTable>
         {paginated && (
           <Pagination
@@ -234,7 +271,7 @@ const ProvidersListTable = () => {
 
 export default ProvidersListTable;
 
-function ConfigDetails({ config }) {
+function ConfigDetails({ config }: { config: ConfigurationTableDataRow }) {
   const { t } = useTranslation();
   const state = useMemo(() => ({ providerName: config.name, ...config }), [config]);
 
@@ -277,7 +314,7 @@ function ConfigDetails({ config }) {
         </div>
         <div className={styles.labelContainer}>
           <p className={styles.labelBold}>{t('templateName', 'Template name')}: </p>
-          <p className={styles.label}>{config.template}</p>
+          <p className={styles.label}>{config.templateName}</p>
         </div>
         <div className={styles.labelContainer}>
           <p className={styles.labelBold}>{t('maxRetries', 'Maximum retries')}: </p>

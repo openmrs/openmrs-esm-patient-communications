@@ -1,28 +1,27 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
+import debounce from 'lodash-es/debounce';
 import { useTranslation } from 'react-i18next';
-import { CardHeader, ErrorState } from '@openmrs/esm-patient-common-lib';
 import {
-  InlineLoading,
   DataTable,
   DataTableSkeleton,
+  InlineLoading,
   Pagination,
-  TableContainer,
+  Search,
   Table,
+  TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
   TableHeader,
   TableRow,
-  TableBody,
-  TableCell,
 } from '@carbon/react';
-import { useConfig, useLayoutType, isDesktop as isDesktopLayout } from '@openmrs/esm-framework';
+import { useConfig, useLayoutType, isDesktop as isDesktopLayout, CardHeader, ErrorState } from '@openmrs/esm-framework';
 import { type ConfigObject } from '../config-schema';
 import { useSmsLogs } from '../hooks/useLogs';
 import { EmptyState } from '../providers/empty-state/empty-state.component';
-import styles from './sms-logs-table.scss';
-import { Search } from '@carbon/react';
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from './pagination-constant';
-import { debounce } from 'lodash-es';
+import styles from './sms-logs-table.scss';
 
 const SmsLogsTable = () => {
   const { t } = useTranslation();
@@ -49,8 +48,8 @@ const SmsLogsTable = () => {
     [],
   );
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleSearchChange: NonNullable<React.ComponentProps<typeof Search>['onChange']> = (event) => {
+    const value = event.target.value;
     setRawSearchTerm(value);
     debouncedSetSearchTerm(value);
   };
@@ -64,13 +63,13 @@ const SmsLogsTable = () => {
       config?.smsLogsColumns?.map((column) => ({
         key: column,
         header: t(column),
-        isSortable: true,
-        sortFunc: (valueA, valueB) => valueA.display?.localeCompare(valueB.display),
       })),
     [config?.smsLogsColumns, t],
   );
+  const rows = useMemo(() => (smsLogs ?? []).map((log) => ({ ...log, id: String(log.id) })), [smsLogs]);
 
   if (isLoadingLogs) return <DataTableSkeleton role="progressbar" compact={isDesktop} zebra />;
+
   if (error) return <ErrorState error={error} headerTitle={headerTitle} />;
 
   return (
@@ -92,11 +91,11 @@ const SmsLogsTable = () => {
         </div>
       </CardHeader>
 
-      {smsLogs.length > 0 ? (
+      {(smsLogs?.length ?? 0) > 0 ? (
         <>
           <DataTable
             aria-label="provider-configutations overview"
-            rows={smsLogs}
+            rows={rows}
             headers={headers}
             isSortable
             size={isTablet ? 'lg' : 'sm'}
@@ -109,17 +108,23 @@ const SmsLogsTable = () => {
                   <Table {...getTableProps()}>
                     <TableHead>
                       <TableRow>
-                        {headers.map((header) => (
-                          <TableHeader
-                            className={classNames(styles.productiveHeading01, styles.text02)}
-                            {...getHeaderProps({
-                              header,
-                              isSortable: header.isSortable,
-                            })}
-                          >
-                            {header.header?.content ?? header.header}
-                          </TableHeader>
-                        ))}
+                        {headers.map((header) => {
+                          const headerProps = getHeaderProps({
+                            header,
+                            isSortable: true,
+                          });
+                          const { onClick, ...restHeaderProps } = headerProps;
+                          return (
+                            <TableHeader
+                              key={header.key}
+                              className={classNames(styles.productiveHeading01, styles.text02)}
+                              {...restHeaderProps}
+                              onClick={onClick as unknown as React.MouseEventHandler<HTMLButtonElement>}
+                            >
+                              {header.header}
+                            </TableHeader>
+                          );
+                        })}
                         <TableHeader />
                       </TableRow>
                     </TableHead>
@@ -127,7 +132,7 @@ const SmsLogsTable = () => {
                       {rows.map((row) => (
                         <TableRow key={row.id}>
                           {row.cells.map((cell) => (
-                            <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
+                            <TableCell key={cell.id}>{cell.value}</TableCell>
                           ))}
                         </TableRow>
                       ))}
@@ -143,7 +148,7 @@ const SmsLogsTable = () => {
             page={currentPage}
             pageSize={pageSize}
             pageSizes={DEFAULT_PAGE_SIZES}
-            totalItems={smsLogsTotalCount}
+            totalItems={smsLogsTotalCount ?? 0}
             className={styles.pagination}
             size={isDesktop ? 'sm' : 'lg'}
             onChange={({ pageSize: newPageSize, page: newPage }) => {

@@ -1,8 +1,7 @@
-import classnames from 'classnames';
 import React, { useCallback } from 'react';
-import { Tab, Tabs, TabPanel, TabList, TabPanels } from '@carbon/react';
+import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@carbon/react';
+import { Button, Tab, Tabs, TabPanel, TabList, TabPanels } from '@carbon/react';
 import { Export } from '@carbon/react/icons';
 import { WorkspaceContainer, showModal, useWorkspaces } from '@openmrs/esm-framework';
 import { useProviderConfigTemplates } from '../hooks/useProviderConfigTemplates';
@@ -30,8 +29,8 @@ const ProvidersDashboard: React.FC = () => {
         <div className={classnames([styles.container, { [styles.workspaceOpen]: workspaceOpen }])}>
           <h3>{t('smsProviderSettings', 'SMS Provider Settings')}</h3>
           <div className={styles.tabsContainer}>
-            <Tabs className={styles.tabs}>
-              <TabList className={styles.tabList}>
+            <Tabs>
+              <TabList className={styles.tabList} aria-label={t('providerTabs', 'Provider settings tabs')}>
                 <Tab className={styles.tab}>{t('providers', 'Providers')}</Tab>
                 <Tab className={styles.tab}>{t('logs', 'Logs')}</Tab>
               </TabList>

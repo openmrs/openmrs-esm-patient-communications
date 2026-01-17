@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type React from 'react';
 import { type ConfigurationTableDataRow, type ConfigurationTableHeader } from '../../types';
 
 export function readFileAsString(file: File) {
@@ -33,8 +34,17 @@ export function useConfigurationsSorting(
     key: ConfigurationTableHeader['key'] | '';
     sortDirection: 'ASC' | 'DESC' | 'NONE';
   }>({ key: '', sortDirection: 'NONE' });
-  const sortRow = (cellA, cellB, { key, sortDirection }) => {
-    setSortParams({ key, sortDirection });
+  const onHeaderClick = (
+    _event: React.MouseEvent<HTMLButtonElement>,
+    { sortHeaderKey, sortDirection }: { sortHeaderKey?: string; sortDirection: 'ASC' | 'DESC' | 'NONE' },
+  ) => {
+    const key = sortHeaderKey ?? '';
+    setSortParams((prev) => {
+      if (prev.key === key && prev.sortDirection === sortDirection) {
+        return prev;
+      }
+      return { key, sortDirection };
+    });
   };
   const sortedRows = useMemo(() => {
     if (sortParams.sortDirection === 'NONE') {
@@ -52,6 +62,6 @@ export function useConfigurationsSorting(
 
   return {
     sortedRows,
-    sortRow,
+    onHeaderClick,
   };
 }

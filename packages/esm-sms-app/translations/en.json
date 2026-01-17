@@ -1,4 +1,5 @@
 {
+  "actions": "actions",
   "add": "Add",
   "clearSearchInput": "Clear search input",
   "configDetails": "Configuration details",
@@ -18,6 +19,7 @@
   "previousPage": "Previous page",
   "providerName": "Provider name",
   "providers": "Providers",
+  "providerTabs": "providerTabs",
   "record": "Record",
   "remove": "Remove",
   "search": "Search",

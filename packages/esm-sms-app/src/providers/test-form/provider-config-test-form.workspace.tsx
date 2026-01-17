@@ -154,6 +154,7 @@ const ProviderConfigTestForm: React.FC<ProviderConfigTestFormProps> = ({ provide
                     {...field}
                     invalid={!!error?.message}
                     invalidText={error?.message}
+                    id={field.name}
                     labelText={t('multipleRecipientsNotice', 'Separate multiple numbers with comma')}
                     placeholder={t('placeHolder', 'Enter phone +123455690, +09348...')}
                     data-testid="recipients"

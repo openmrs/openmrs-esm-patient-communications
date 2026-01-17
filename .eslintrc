@@ -4,7 +4,7 @@
   },
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "react-hooks"],
+  "plugins": ["@typescript-eslint", "import", "react-hooks"],
   "root": true,
   "rules": {
     "react-hooks/exhaustive-deps": "warn",
@@ -22,6 +22,7 @@
         "fixStyle": "inline-type-imports"
       }
     ],
+    "import/no-duplicates": "error",
     "prefer-const": "off",
     "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-unsafe-optional-chaining": "off",

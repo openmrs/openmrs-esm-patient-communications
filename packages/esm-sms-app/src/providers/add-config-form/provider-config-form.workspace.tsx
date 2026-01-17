@@ -145,6 +145,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                   <TextInput
                     {...field}
                     data-testid="provider-name"
+                    id={field.name}
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     labelText={t('nameOfProvider', 'Name of the provider')}
@@ -167,20 +168,30 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                 <Controller
                   name="templateName"
                   control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <Select
-                      {...field}
-                      data-testid="select-template"
-                      labelText={t('selectTemplate', 'Select a template')}
-                      invalid={!!error?.message}
-                      invalidText={error?.message}
-                    >
-                      <SelectItem value={''} text={t('chooseTemplate', 'Choose a template')} />
-                      {Object.keys(templates).map((value) => (
-                        <SelectItem value={value} text={value} />
-                      ))}
-                    </Select>
-                  )}
+                  render={({ field, fieldState: { error } }) => {
+                    const selectProps: Pick<
+                      React.ComponentProps<typeof Select>,
+                      'id' | 'value' | 'onChange' | 'onBlur' | 'ref' | 'labelText' | 'invalid' | 'invalidText'
+                    > & { 'data-testid': string } = {
+                      id: field.name,
+                      value: field.value ?? '',
+                      onChange: (e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value),
+                      onBlur: field.onBlur,
+                      ref: field.ref,
+                      'data-testid': 'select-template',
+                      labelText: t('selectTemplate', 'Select a template'),
+                      invalid: !!error?.message,
+                      invalidText: error?.message,
+                    };
+                    return (
+                      <Select {...(selectProps as unknown as React.ComponentProps<typeof Select>)}>
+                        <SelectItem value={''} text={t('chooseTemplate', 'Choose a template')} />
+                        {Object.keys(templates).map((value) => (
+                          <SelectItem key={value} value={value} text={value} />
+                        ))}
+                      </Select>
+                    );
+                  }}
                 />
               )}
             </ResponsiveWrapper>
@@ -199,10 +210,11 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                   <NumberInput
                     {...field}
                     data-testid="numberOfRetries"
+                    id={field.name}
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     onChange={(_, { value }) => field.onChange(Number(value))}
-                    labelText={t('numberOfRetries', 'Number of retries')}
+                    label={t('numberOfRetries', 'Number of retries')}
                   />
                 )}
               />
@@ -224,6 +236,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                     invalid={!!error?.message}
                     invalidText={error?.message}
                     {...field}
+                    id={field.name}
                     labelText={t('headerSplitText', 'Header split text')}
                   />
                 )}
@@ -246,6 +259,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                     data-testid="split-footer"
                     invalid={!!error?.message}
                     invalidText={error?.message}
+                    id={field.name}
                     labelText={t('footerSplitText', 'Footers split text')}
                   />
                 )}
@@ -317,6 +331,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
                         {...field}
                         invalid={!!error?.message}
                         invalidText={error?.message}
+                        id={field.name}
                         labelText={dataField}
                         data-testid={dataField}
                       />

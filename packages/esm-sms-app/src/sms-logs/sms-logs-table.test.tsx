@@ -57,7 +57,7 @@ describe('SmslogsTable', () => {
       error: new Error(),
     });
     renderSmsLogsTable();
-    expect(screen.getByText('Error undefined:')).toBeInTheDocument();
+    expect(screen.getByText('Error State')).toBeInTheDocument();
   });
 });
 

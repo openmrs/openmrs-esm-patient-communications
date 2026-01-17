@@ -14,6 +14,8 @@ jest.mock('../hooks/useProviderConfigTemplates', () => ({
   useProviderConfigTemplates: jest.fn(),
 }));
 
+jest.mock('../sms-logs/sms-logs-table.component', () => () => <div>Sms Logs Table</div>);
+
 describe('ProvidersDashboard', () => {
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
