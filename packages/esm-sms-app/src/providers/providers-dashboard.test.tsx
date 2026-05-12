@@ -6,42 +6,42 @@ import { showModal, useWorkspaces } from '@openmrs/esm-framework';
 import { useProviderConfigTemplates } from '../hooks/useProviderConfigTemplates';
 import { renderWithSwr } from 'tools';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: jest.fn(),
+vi.mock('react-i18next', () => ({
+  useTranslation: vi.fn(),
 }));
 
-jest.mock('../hooks/useProviderConfigTemplates', () => ({
-  useProviderConfigTemplates: jest.fn(),
+vi.mock('../hooks/useProviderConfigTemplates', () => ({
+  useProviderConfigTemplates: vi.fn(),
 }));
 
-jest.mock('../sms-logs/sms-logs-table.component', () => () => <div>Sms Logs Table</div>);
+vi.mock('../sms-logs/sms-logs-table.component', () => ({ default: () => <div>Sms Logs Table</div> }));
 
 describe('ProvidersDashboard', () => {
   beforeAll(() => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: jest.fn().mockImplementation((query) => ({
+      value: vi.fn().mockImplementation((query) => ({
         matches: false,
         media: query,
         onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
       })),
     });
   });
 
-  const mockShowModal = showModal as jest.Mock;
-  const mockUseProviderConfigTemplates = useProviderConfigTemplates as jest.Mock;
-  const mockUseTranslation = useTranslation as jest.Mock;
-  const mockUseworkspaces = useWorkspaces as jest.Mock;
+  const mockShowModal = showModal as Mock;
+  const mockUseProviderConfigTemplates = useProviderConfigTemplates as Mock;
+  const mockUseTranslation = useTranslation as Mock;
+  const mockUseworkspaces = useWorkspaces as Mock;
 
   beforeEach(() => {
     mockUseTranslation.mockReturnValue({ t: (_key: string, value: string) => value });
     mockUseworkspaces.mockReturnValue({ active: false });
-    mockUseProviderConfigTemplates.mockReturnValue({ mutateTemplates: jest.fn() });
+    mockUseProviderConfigTemplates.mockReturnValue({ mutateTemplates: vi.fn() });
   });
 
   it('renders the component correctly', () => {

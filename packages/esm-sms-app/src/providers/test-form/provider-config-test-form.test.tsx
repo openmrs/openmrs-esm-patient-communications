@@ -1,18 +1,19 @@
 import React from 'react';
+import type * as Zod from 'zod';
 import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { renderWithSwr } from 'tools';
 import ConfigTestForm from './provider-config-test-form.workspace';
 import { openmrsFetch } from '@openmrs/esm-framework';
 
-jest.mock('zod', () => {
-  const originalModule = jest.requireActual('zod');
+vi.mock('zod', async (importOriginal) => {
+  const originalModule = await importOriginal<typeof Zod>();
   const mockedZod = {
     ...originalModule,
     z: {
       ...originalModule.z,
-      schema: jest.fn(() => ({
-        safeParse: jest.fn(() => ({
+      schema: vi.fn(() => ({
+        safeParse: vi.fn(() => ({
           success: true,
           data: {},
         })),
@@ -22,23 +23,23 @@ jest.mock('zod', () => {
   return mockedZod;
 });
 
-jest.mock('../../api/providers.resource', () => ({
-  sendTestMessage: jest.fn(),
+vi.mock('../../api/providers.resource', () => ({
+  sendTestMessage: vi.fn(),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  openmrsFetch: jest.fn(),
-  showSnackbar: jest.fn(),
+vi.mock('@openmrs/esm-framework', () => ({
+  openmrsFetch: vi.fn(),
+  showSnackbar: vi.fn(),
   useLayoutType: () => 'desktop',
-  useConfig: jest.fn(() => ({ configurationPageSize: 10 })),
+  useConfig: vi.fn(() => ({ configurationPageSize: 10 })),
   ResponsiveWrapper: ({ children }) => <div>{children}</div>,
 }));
 
-jest.mock('../../hooks/useLogs', () => ({
-  useSmsLogs: jest.fn(() => ({ mutateLogs: jest.fn() })),
+vi.mock('../../hooks/useLogs', () => ({
+  useSmsLogs: vi.fn(() => ({ mutateLogs: vi.fn() })),
 }));
 
-const mockOpenmrsFetch = openmrsFetch as jest.Mock;
+const mockOpenmrsFetch = openmrsFetch as Mock;
 
 describe('AddProviderConfigForm', () => {
   it('Renders form fields correctly', async () => {
