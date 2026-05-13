@@ -1,6 +1,9 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 process.env.TZ = 'UTC';
+
+const r = (relativePath: string) => fileURLToPath(new URL(relativePath, import.meta.url));
 
 export default defineConfig({
   resolve: {
@@ -10,7 +13,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     clearMocks: true,
-    setupFiles: [new URL('./tools/setup-tests.ts', import.meta.url).pathname],
+    setupFiles: [r('./tools/setup-tests.ts')],
     exclude: ['**/node_modules/**', '**/e2e/**', '**/dist/**'],
     server: {
       deps: {
@@ -33,8 +36,8 @@ export default defineConfig({
     alias: {
       '@openmrs/esm-framework/src/internal': '@openmrs/esm-framework/mock',
       '@openmrs/esm-framework': '@openmrs/esm-framework/mock',
-      'react-i18next': new URL('./__mocks__/react-i18next.js', import.meta.url).pathname,
-      tools: new URL('./tools/index.ts', import.meta.url).pathname,
+      'react-i18next': r('./__mocks__/react-i18next.js'),
+      tools: r('./tools/index.ts'),
     },
   },
 });

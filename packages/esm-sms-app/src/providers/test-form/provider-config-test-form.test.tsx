@@ -1,4 +1,5 @@
 import React from 'react';
+import { type Mock } from 'vitest';
 import type * as Zod from 'zod';
 import { screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';

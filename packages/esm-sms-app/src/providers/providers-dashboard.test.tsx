@@ -1,4 +1,5 @@
 import React from 'react';
+import { type Mock } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
 import ProvidersDashboard from './providers-dashboard.component';
 import { useTranslation } from 'react-i18next';

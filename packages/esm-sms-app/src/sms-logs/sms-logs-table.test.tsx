@@ -1,4 +1,5 @@
 import React from 'react';
+import { type Mock } from 'vitest';
 import { screen } from '@testing-library/react';
 import SmslogsTable from './sms-logs-table.component';
 import { useTranslation } from 'react-i18next';
