@@ -88,8 +88,8 @@ const ConfigUploadModal: React.FC<ConfigUploadModalProps> = ({ closeModal, mutat
             showSnackbar({
               title: t('uploadSuccess', 'Upload successful'),
               kind: 'success',
-            }),
-              closeModal();
+            });
+            closeModal();
           })
           .catch(() =>
             showSnackbar({

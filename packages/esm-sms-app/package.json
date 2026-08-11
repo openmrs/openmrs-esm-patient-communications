@@ -13,7 +13,7 @@
     "debug": "npm run serve",
     "build": "webpack --mode production",
     "analyze": "webpack --mode=production --env.analyze=true",
-    "lint": "cross-env eslint src --ext ts,tsx",
+    "lint": "cross-env eslint src",
     "test": "yarn run -T vitest run --passWithNoTests",
     "test:watch": "yarn run -T vitest watch",
     "coverage": "yarn run -T vitest run --coverage --passWithNoTests",
