@@ -68,9 +68,9 @@ describe('AddProviderConfigForm', () => {
 
     const buttons = getFormButtons();
     expect(buttons.cancelButton).toBeInTheDocument();
-    expect(buttons.cancelButton).not.toBeDisabled();
+    expect(buttons.cancelButton).toBeEnabled();
     expect(buttons.submitButton).toBeInTheDocument();
-    expect(buttons.submitButton).not.toBeDisabled();
+    expect(buttons.submitButton).toBeEnabled();
   });
 
   it('saves and creates a new provider configuration', async () => {
