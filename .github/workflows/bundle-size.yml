@@ -28,4 +28,4 @@ jobs:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           minimum-change-threshold: 10000 # 10 KB
           build-script: "turbo build --concurrency=5"
-
+          clean-script: "clean:dist"
