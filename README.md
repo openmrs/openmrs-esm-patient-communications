@@ -1,4 +1,4 @@
-![Node.js CI](https://github.com/openmrs/openmrs-esm-patient-communications/workflows/Node.js%20CI/badge.svg)
+![OpenMRS CI](https://github.com/openmrs/openmrs-esm-patient-communications/actions/workflows/node.js.yml/badge.svg)
 
 # OpenMRS Patient Communications
 
