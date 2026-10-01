@@ -77,7 +77,7 @@ const AddProviderConfigForm: React.FC<Workspace2DefinitionProps<AddProviderConfi
   } = workspaceProps ?? {};
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
-  const { mutateConfigs, providerConfigurations } = useProviderConfigurations();
+  const { mutateConfigs, providerConfigurations, defaultConfig } = useProviderConfigurations();
   const { templates, isLoadingTemplates } = useProviderConfigTemplates();
 
   const {
@@ -119,7 +119,11 @@ const AddProviderConfigForm: React.FC<Workspace2DefinitionProps<AddProviderConfi
         ? providerConfigurations.map((config, index) => (index === editedIndex ? payload : config))
         : [...providerConfigurations, payload];
 
-    await saveConfig(configs as Array<ProviderConfiguration>)
+    // Keep the default pointing at this configuration if it was the default and has been renamed.
+    const isEditingDefault = Boolean(workspaceProps?.providerName) && defaultConfig === workspaceProps.providerName;
+    const defaultConfigName = isEditingDefault ? providerName : defaultConfig;
+
+    await saveConfig(configs as Array<ProviderConfiguration>, defaultConfigName ?? null)
       .then(() => {
         showSnackbar({
           title: t('configSaved', 'Configuration saved'),

@@ -25,12 +25,13 @@ vi.mock('zod', async (importOriginal) => {
   return mockedZod;
 });
 
-const mockProviderConfigurations = vi.hoisted(() => ({ current: [] }));
+const mockProviderConfigurations = vi.hoisted(() => ({ current: [], defaultConfig: undefined }));
 
 vi.mock('../../hooks/useProviderConfigurations', () => ({
   useProviderConfigurations: () => ({
     mutateConfigs: vi.fn(),
     providerConfigurations: mockProviderConfigurations.current,
+    defaultConfig: mockProviderConfigurations.defaultConfig,
   }),
 }));
 
@@ -64,6 +65,7 @@ const mockSaveConfig = saveConfig as Mock;
 describe('AddProviderConfigForm', () => {
   beforeEach(() => {
     mockProviderConfigurations.current = [];
+    mockProviderConfigurations.defaultConfig = undefined;
   });
 
   it('Renders form fields correctly', async () => {
@@ -111,22 +113,25 @@ describe('AddProviderConfigForm', () => {
     await user.click(buttons.submitButton);
 
     expect(saveConfig).toHaveBeenCalled();
-    expect(saveConfig).toHaveBeenCalledWith([
-      {
-        name: 'Vonage',
-        templateName: 'Twilio',
-        autoScript: undefined,
-        maxRetries: 0,
-        splitHeader: 'Msg $m of $t',
-        splitFooter: '...',
-        excludeLastFooter: true,
-        props: [
-          { name: 'username', value: 'test-username' },
-          { name: 'password', value: 'test-password' },
-          { name: 'from', value: 'test-from' },
-        ],
-      },
-    ]);
+    expect(saveConfig).toHaveBeenCalledWith(
+      [
+        {
+          name: 'Vonage',
+          templateName: 'Twilio',
+          autoScript: undefined,
+          maxRetries: 0,
+          splitHeader: 'Msg $m of $t',
+          splitFooter: '...',
+          excludeLastFooter: true,
+          props: [
+            { name: 'username', value: 'test-username' },
+            { name: 'password', value: 'test-password' },
+            { name: 'from', value: 'test-from' },
+          ],
+        },
+      ],
+      null,
+    );
     expect(showSnackbar).toHaveBeenCalled();
     expect(showSnackbar).toHaveBeenCalledWith({
       title: 'Configuration saved',
@@ -150,6 +155,45 @@ describe('AddProviderConfigForm', () => {
     expect(savedConfigs).toHaveLength(2);
     expect(savedConfigs[0]).toEqual(expect.objectContaining({ name: 'Twilio', splitHeader: 'Part $m of $t' }));
     expect(savedConfigs[1]).toBe(plivo);
+  });
+
+  it('keeps the default configuration when adding a new one', async () => {
+    mockProviderConfigurations.current = [{ ...mockConfig, name: 'Twilio' }];
+    mockProviderConfigurations.defaultConfig = 'Twilio';
+    mockSaveConfig.mockResolvedValue({});
+    const user = userEvent.setup();
+    renderAddProviderConfigForm();
+
+    await fillFormInputs(user, getFormInputs(), {
+      name: 'Vonage',
+      template: 'Twilio',
+      maxRetries: '0',
+      splitHeader: 'Msg $m of $t',
+      splitFooter: '...',
+    });
+    await fillDynamicFormInputs(user, getDynamicFormInputs(), {
+      username: 'test-username',
+      password: 'test-password',
+      from: 'test-from',
+    });
+    await user.click(getFormButtons().submitButton);
+
+    expect(mockSaveConfig).toHaveBeenCalledWith(expect.any(Array), 'Twilio');
+  });
+
+  it('keeps a renamed default configuration as the default', async () => {
+    const twilio = { ...mockConfig, name: 'Twilio' };
+    mockProviderConfigurations.current = [twilio];
+    mockProviderConfigurations.defaultConfig = 'Twilio';
+    mockSaveConfig.mockResolvedValue({});
+    const user = userEvent.setup();
+    renderAddProviderConfigForm({ ...twilio, providerName: 'Twilio' });
+
+    await user.clear(screen.getByTestId('provider-name'));
+    await user.type(screen.getByTestId('provider-name'), 'Twilio EU');
+    await user.click(getFormButtons().submitButton);
+
+    expect(mockSaveConfig).toHaveBeenCalledWith([expect.objectContaining({ name: 'Twilio EU' })], 'Twilio EU');
   });
 
   it('should show field errors when invalid data type is provided', async () => {
