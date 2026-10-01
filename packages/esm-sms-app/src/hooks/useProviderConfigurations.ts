@@ -10,16 +10,14 @@ export function useProviderConfigurations() {
     openmrsFetch,
   );
 
-  const providerConfigurations = useMemo(() => {
-    if (!isLoading || !isValidating) {
-      return data.data.configs.map((config) => ({
+  const providerConfigurations = useMemo(
+    () =>
+      data?.data?.configs?.map((config) => ({
         ...config,
         isDefaultConfig: data.data.defaultConfigName === config.name,
-      }));
-    } else {
-      return [];
-    }
-  }, [data?.data?.configs, data?.data?.defaultConfigName, isLoading, isValidating]);
+      })) ?? [],
+    [data?.data?.configs, data?.data?.defaultConfigName],
+  );
 
   return {
     providerConfigurations,
