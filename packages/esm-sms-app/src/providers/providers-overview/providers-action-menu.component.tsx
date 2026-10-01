@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layer, OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { useLayoutType, showModal, showSnackbar, launchWorkspace } from '@openmrs/esm-framework';
+import { useLayoutType, showModal, showSnackbar, launchWorkspace2 } from '@openmrs/esm-framework';
 import { type ProviderConfiguration } from '../../types';
 import { useProviderConfigurations } from '../../hooks/useProviderConfigurations';
 import { setAsDefaultConfig } from '../../api/providers.resource';
@@ -20,7 +20,7 @@ export const ConfigurationsActionMenu = ({ config }: configurationsActionMenuPro
 
   const launchEditConfigForm = useCallback(
     () =>
-      launchWorkspace('add-provider-config-form', {
+      launchWorkspace2('add-provider-config-form', {
         workspaceTitle: t('editConfig', 'Edit {{configName}}', {
           configName: config.name,
         }),
@@ -31,7 +31,7 @@ export const ConfigurationsActionMenu = ({ config }: configurationsActionMenuPro
 
   const launchConfigTestForm = useCallback(
     () =>
-      launchWorkspace('provider-config-test-form', {
+      launchWorkspace2('provider-config-test-form', {
         workspaceTitle: t('testConfig', 'Test {{ configName }}', {
           configName: config.name,
         }),

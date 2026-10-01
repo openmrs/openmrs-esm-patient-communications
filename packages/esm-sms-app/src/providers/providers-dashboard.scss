@@ -13,11 +13,6 @@
   width: 100%;
   gap: spacing.$spacing-07;
   padding: spacing.$spacing-09 10rem;
-  transition: padding-right .5s ease-in-out;
-
-  &.workspaceOpen {
-    padding-right: spacing.$spacing-05;
-  }
 }
 
 .tabsContainer {

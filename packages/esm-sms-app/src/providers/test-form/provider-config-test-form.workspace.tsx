@@ -15,7 +15,13 @@ import {
   Accordion,
   TextArea,
 } from '@carbon/react';
-import { ResponsiveWrapper, useLayoutType, showSnackbar, closeWorkspace } from '@openmrs/esm-framework';
+import {
+  ResponsiveWrapper,
+  useLayoutType,
+  showSnackbar,
+  Workspace2,
+  type Workspace2DefinitionProps,
+} from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import styles from './provider-config-test-form.scss';
 import { z } from 'zod';
@@ -47,9 +53,13 @@ const configTestFormSchema = z.object({
 type ConfigTestFormData = z.infer<typeof configTestFormSchema>;
 
 interface ProviderConfigTestFormProps {
+  workspaceTitle?: string;
   providerName: string;
 }
-const ProviderConfigTestForm: React.FC<ProviderConfigTestFormProps> = ({ providerName }) => {
+const ProviderConfigTestForm: React.FC<Workspace2DefinitionProps<ProviderConfigTestFormProps>> = ({
+  workspaceProps: { workspaceTitle, providerName },
+  closeWorkspace,
+}) => {
   const { t } = useTranslation();
   const { mutateLogs } = useSmsLogs(1, 100);
   const isTablet = useLayoutType() === 'tablet';
@@ -108,126 +118,128 @@ const ProviderConfigTestForm: React.FC<ProviderConfigTestFormProps> = ({ provide
   );
 
   return (
-    <Form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={2} className={styles.formContainer}>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('deliveryTime', 'Delivery Time')}</span>
-          </Column>
-          <Column sm={3}>
-            <Controller
-              name="deliveryTime"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <RadioButtonGroup
-                  {...field}
-                  invalid={!!error?.message}
-                  invalidText={error?.message}
-                  className={styles.radioButtonGroup}
-                  orientation="vertical"
-                  data-testid="delivery-time"
-                >
-                  {deliveryTimes.map((deliveryTime) => (
-                    <RadioButton
-                      key={deliveryTime.key}
-                      labelText={deliveryTime.labelText}
-                      value={deliveryTime.value}
-                      id={deliveryTime.key}
-                    />
-                  ))}
-                </RadioButtonGroup>
-              )}
-            />
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('recipients', 'Recipient(s)')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
+    <Workspace2 title={workspaceTitle ?? t('providerConfigTestWorkspaceTitle', 'Test configuration')}>
+      <Form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+        <Stack gap={2} className={styles.formContainer}>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('deliveryTime', 'Delivery Time')}</span>
+            </Column>
+            <Column sm={3}>
               <Controller
-                name="recipients"
+                name="deliveryTime"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
-                  <TextInput
+                  <RadioButtonGroup
                     {...field}
                     invalid={!!error?.message}
                     invalidText={error?.message}
-                    id={field.name}
-                    labelText={t('multipleRecipientsNotice', 'Separate multiple numbers with comma')}
-                    placeholder={t('placeHolder', 'Enter phone +123455690, +09348...')}
-                    data-testid="recipients"
-                  />
+                    className={styles.radioButtonGroup}
+                    orientation="vertical"
+                    data-testid="delivery-time"
+                  >
+                    {deliveryTimes.map((deliveryTime) => (
+                      <RadioButton
+                        key={deliveryTime.key}
+                        labelText={deliveryTime.labelText}
+                        value={deliveryTime.value}
+                        id={deliveryTime.key}
+                      />
+                    ))}
+                  </RadioButtonGroup>
                 )}
               />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('message', 'Message')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              <Controller
-                name="message"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TextArea
-                    {...field}
-                    invalid={!!error?.message}
-                    invalidText={error?.message}
-                    labelText={t('writeTestMessage', 'Write your test message')}
-                    placeholder={t('writeTestMessage', 'Write your test message')}
-                    data-testid="test-message"
-                  />
-                )}
-              />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <ResponsiveWrapper>
-            <Accordion>
-              <AccordionItem title={t('advanced', 'Advanced')}>
-                <Column sm={1}>
-                  <span className={styles.columnLabel}>{t('customParameters', 'Custom params (optional)')}</span>
-                </Column>
-                <Column sm={3}>
-                  <ResponsiveWrapper>
-                    <Controller
-                      name="customParams"
-                      control={control}
-                      render={({ field }) => (
-                        <TextArea
-                          {...field}
-                          labelText={t('mapCustomParams', 'Map custom params in key:value format')}
-                          placeholder={t('enterCustomParams', 'Enter custom parameters. Use new line as separator')}
-                          data-testid="custom-params"
-                        />
-                      )}
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('recipients', 'Recipient(s)')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                <Controller
+                  name="recipients"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextInput
+                      {...field}
+                      invalid={!!error?.message}
+                      invalidText={error?.message}
+                      id={field.name}
+                      labelText={t('multipleRecipientsNotice', 'Separate multiple numbers with comma')}
+                      placeholder={t('placeHolder', 'Enter phone +123455690, +09348...')}
+                      data-testid="recipients"
                     />
-                  </ResponsiveWrapper>
-                </Column>
-              </AccordionItem>
-            </Accordion>
-          </ResponsiveWrapper>
-        </Row>
-      </Stack>
-      <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
-        <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace('provider-config-test-form')}>
-          {t('discard', 'Discard')}
-        </Button>
-        <Button className={styles.button} kind="primary" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <InlineLoading description={t('sending', 'Sending') + '...'} />
-          ) : (
-            <span>{t('sendAndClose', 'Send and close')}</span>
-          )}
-        </Button>
-      </ButtonSet>
-    </Form>
+                  )}
+                />
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('message', 'Message')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                <Controller
+                  name="message"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextArea
+                      {...field}
+                      invalid={!!error?.message}
+                      invalidText={error?.message}
+                      labelText={t('writeTestMessage', 'Write your test message')}
+                      placeholder={t('writeTestMessage', 'Write your test message')}
+                      data-testid="test-message"
+                    />
+                  )}
+                />
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <ResponsiveWrapper>
+              <Accordion>
+                <AccordionItem title={t('advanced', 'Advanced')}>
+                  <Column sm={1}>
+                    <span className={styles.columnLabel}>{t('customParameters', 'Custom params (optional)')}</span>
+                  </Column>
+                  <Column sm={3}>
+                    <ResponsiveWrapper>
+                      <Controller
+                        name="customParams"
+                        control={control}
+                        render={({ field }) => (
+                          <TextArea
+                            {...field}
+                            labelText={t('mapCustomParams', 'Map custom params in key:value format')}
+                            placeholder={t('enterCustomParams', 'Enter custom parameters. Use new line as separator')}
+                            data-testid="custom-params"
+                          />
+                        )}
+                      />
+                    </ResponsiveWrapper>
+                  </Column>
+                </AccordionItem>
+              </Accordion>
+            </ResponsiveWrapper>
+          </Row>
+        </Stack>
+        <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
+          <Button className={styles.button} kind="secondary" onClick={() => closeWorkspace()}>
+            {t('discard', 'Discard')}
+          </Button>
+          <Button className={styles.button} kind="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <InlineLoading description={t('sending', 'Sending') + '...'} />
+            ) : (
+              <span>{t('sendAndClose', 'Send and close')}</span>
+            )}
+          </Button>
+        </ButtonSet>
+      </Form>
+    </Workspace2>
   );
 };
 

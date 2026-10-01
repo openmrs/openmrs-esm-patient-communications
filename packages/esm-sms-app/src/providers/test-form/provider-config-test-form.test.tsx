@@ -34,6 +34,12 @@ vi.mock('@openmrs/esm-framework', () => ({
   useLayoutType: () => 'desktop',
   useConfig: vi.fn(() => ({ configurationPageSize: 10 })),
   ResponsiveWrapper: ({ children }) => <div>{children}</div>,
+  Workspace2: ({ title, children }) => (
+    <div>
+      <h1>{title}</h1>
+      {children}
+    </div>
+  ),
 }));
 
 vi.mock('../../hooks/useLogs', () => ({
@@ -87,8 +93,19 @@ describe('AddProviderConfigForm', () => {
 });
 
 function renderConfigTestForm() {
-  const props = { providerName: 'test-provider' };
-  return renderWithSwr(<ConfigTestForm {...props} />);
+  return renderWithSwr(
+    <ConfigTestForm
+      workspaceProps={{ providerName: 'test-provider' }}
+      windowProps={null}
+      groupProps={null}
+      closeWorkspace={vi.fn()}
+      launchChildWorkspace={vi.fn()}
+      workspaceName="provider-config-test-form"
+      windowName="sms-provider-config-test-form-window"
+      isRootWorkspace
+      showActionMenu={false}
+    />,
+  );
 }
 
 function getFormInputs() {

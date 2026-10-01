@@ -19,7 +19,13 @@ import {
 } from '@carbon/react';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ResponsiveWrapper, closeWorkspace, showSnackbar, useLayoutType } from '@openmrs/esm-framework';
+import {
+  ResponsiveWrapper,
+  showSnackbar,
+  useLayoutType,
+  Workspace2,
+  type Workspace2DefinitionProps,
+} from '@openmrs/esm-framework';
 import { useProviderConfigTemplates } from '../../hooks/useProviderConfigTemplates';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +36,7 @@ import { useProviderConfigurations } from '../../hooks/useProviderConfigurations
 import styles from './provider-config-form.scss';
 
 interface AddProviderConfigProps {
+  workspaceTitle?: string;
   providerName?: string;
   templateName?: string;
   maxRetries?: number;
@@ -53,16 +60,21 @@ const addProviderConfigFormSchema = z.object({
 
 type AddProviderConfigFormData = z.infer<typeof addProviderConfigFormSchema>;
 
-const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
-  providerName,
-  templateName,
-  excludeLastFooter,
-  splitFooter,
-  splitHeader,
-  maxRetries,
-  autoScript,
-  props,
+const AddProviderConfigForm: React.FC<Workspace2DefinitionProps<AddProviderConfigProps>> = ({
+  workspaceProps,
+  closeWorkspace,
 }) => {
+  const {
+    workspaceTitle,
+    providerName,
+    templateName,
+    excludeLastFooter,
+    splitFooter,
+    splitHeader,
+    maxRetries,
+    autoScript,
+    props,
+  } = workspaceProps ?? {};
   const { t } = useTranslation();
   const isTablet = useLayoutType() === 'tablet';
   const { mutateConfigs, providerConfigurations } = useProviderConfigurations();
@@ -119,7 +131,7 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
 
   const selectedTemplate = templates?.[watch('templateName')] ?? null;
 
-  const closeForm = () => closeWorkspace('add-provider-config-form');
+  const closeForm = () => closeWorkspace();
 
   useEffect(() => {
     if (props) {
@@ -130,232 +142,234 @@ const AddProviderConfigForm: React.FC<AddProviderConfigProps> = ({
   }, [props, setValue]);
 
   return (
-    <Form data-testid="add-provider-form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={2} className={styles.formContainer}>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('providerName', ' Provider Name')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              <Controller
-                name="providerName"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TextInput
-                    {...field}
-                    data-testid="provider-name"
-                    id={field.name}
-                    invalid={!!error?.message}
-                    invalidText={error?.message}
-                    labelText={t('nameOfProvider', 'Name of the provider')}
-                    placeholder={t('namePlaceHolder', 'Enter provider name e.g Twilio')}
-                  />
-                )}
-              />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('template', 'Template')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              {isLoadingTemplates ? (
-                <SelectSkeleton />
-              ) : (
+    <Workspace2 title={workspaceTitle ?? t('addProviderConfigWorkspaceTitle', 'Add Provider')}>
+      <Form data-testid="add-provider-form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+        <Stack gap={2} className={styles.formContainer}>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('providerName', ' Provider Name')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
                 <Controller
-                  name="templateName"
+                  name="providerName"
                   control={control}
-                  render={({ field, fieldState: { error } }) => {
-                    const selectProps: Pick<
-                      React.ComponentProps<typeof Select>,
-                      'id' | 'value' | 'onChange' | 'onBlur' | 'ref' | 'labelText' | 'invalid' | 'invalidText'
-                    > & { 'data-testid': string } = {
-                      id: field.name,
-                      value: field.value ?? '',
-                      onChange: (e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value),
-                      onBlur: field.onBlur,
-                      ref: field.ref,
-                      'data-testid': 'select-template',
-                      labelText: t('selectTemplate', 'Select a template'),
-                      invalid: !!error?.message,
-                      invalidText: error?.message,
-                    };
-                    return (
-                      <Select {...(selectProps as unknown as React.ComponentProps<typeof Select>)}>
-                        <SelectItem value={''} text={t('chooseTemplate', 'Choose a template')} />
-                        {Object.keys(templates).map((value) => (
-                          <SelectItem key={value} value={value} text={value} />
-                        ))}
-                      </Select>
-                    );
-                  }}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextInput
+                      {...field}
+                      data-testid="provider-name"
+                      id={field.name}
+                      invalid={!!error?.message}
+                      invalidText={error?.message}
+                      labelText={t('nameOfProvider', 'Name of the provider')}
+                      placeholder={t('namePlaceHolder', 'Enter provider name e.g Twilio')}
+                    />
+                  )}
                 />
-              )}
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('maximumRetries', 'Maximum retries')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              <Controller
-                name="maxRetries"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <NumberInput
-                    {...field}
-                    data-testid="numberOfRetries"
-                    id={field.name}
-                    invalid={!!error?.message}
-                    invalidText={error?.message}
-                    onChange={(_, { value }) => field.onChange(Number(value))}
-                    label={t('numberOfRetries', 'Number of retries')}
-                  />
-                )}
-              />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('headerSplitMessage', 'Header split message')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              <Controller
-                name="splitHeader"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TextInput
-                    data-testid="split-header"
-                    invalid={!!error?.message}
-                    invalidText={error?.message}
-                    {...field}
-                    id={field.name}
-                    labelText={t('headerSplitText', 'Header split text')}
-                  />
-                )}
-              />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={1}>
-            <span className={styles.columnLabel}>{t('footerSplitMessage', 'Footer split message')}</span>
-          </Column>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              <Controller
-                name="splitFooter"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <TextInput
-                    {...field}
-                    data-testid="split-footer"
-                    invalid={!!error?.message}
-                    invalidText={error?.message}
-                    id={field.name}
-                    labelText={t('footerSplitText', 'Footers split text')}
-                  />
-                )}
-              />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Column sm={3}>
-            <ResponsiveWrapper>
-              <Controller
-                name="excludeLastFooter"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    data-testid="exclude-last-footer"
-                    id={field.name}
-                    name={field.name}
-                    checked={field.value}
-                    onChange={(_, { checked }) => setValue('excludeLastFooter', checked)}
-                    onBlur={field.onBlur}
-                    className={styles.checkBox}
-                    labelText={t('excludeLastFooter', 'Exclude footer from last split message')}
-                  />
-                )}
-              />
-            </ResponsiveWrapper>
-          </Column>
-        </Row>
-        <Row className={styles.row}>
-          <Accordion>
-            <AccordionItem title={t('advanced', 'Advanced')}>
-              <Column sm={1}>
-                <span className={styles.columnLabel}>
-                  {t('automaticResponseScript', 'Automatic response script (Optional)')}
-                </span>
-              </Column>
-              <Column sm={3}>
-                <ResponsiveWrapper>
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('template', 'Template')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                {isLoadingTemplates ? (
+                  <SelectSkeleton />
+                ) : (
                   <Controller
-                    name="autoScript"
+                    name="templateName"
                     control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <TextArea
-                        {...field}
-                        data-testid="auto-script"
-                        invalid={!!error?.message}
-                        invalidText={error?.message}
-                        labelText={t('writeYourScript', 'Write your script')}
-                        placeholder={t('enterAutomaticScript', 'Enter your script')}
-                      />
-                    )}
+                    render={({ field, fieldState: { error } }) => {
+                      const selectProps: Pick<
+                        React.ComponentProps<typeof Select>,
+                        'id' | 'value' | 'onChange' | 'onBlur' | 'ref' | 'labelText' | 'invalid' | 'invalidText'
+                      > & { 'data-testid': string } = {
+                        id: field.name,
+                        value: field.value ?? '',
+                        onChange: (e: React.ChangeEvent<HTMLSelectElement>) => field.onChange(e.target.value),
+                        onBlur: field.onBlur,
+                        ref: field.ref,
+                        'data-testid': 'select-template',
+                        labelText: t('selectTemplate', 'Select a template'),
+                        invalid: !!error?.message,
+                        invalidText: error?.message,
+                      };
+                      return (
+                        <Select {...(selectProps as unknown as React.ComponentProps<typeof Select>)}>
+                          <SelectItem value={''} text={t('chooseTemplate', 'Choose a template')} />
+                          {Object.keys(templates).map((value) => (
+                            <SelectItem key={value} value={value} text={value} />
+                          ))}
+                        </Select>
+                      );
+                    }}
                   />
-                </ResponsiveWrapper>
-              </Column>
-            </AccordionItem>
-          </Accordion>
-        </Row>
-        {(() => {
-          if (selectedTemplate) {
-            return selectedTemplate.configurables.map((dataField, index) => (
-              <Row className={styles.dynamicRow} key={index}>
-                <ResponsiveWrapper>
-                  <Controller
-                    name={`dynamicFields.${dataField}`}
-                    control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <TextInput
-                        {...field}
-                        invalid={!!error?.message}
-                        invalidText={error?.message}
-                        id={field.name}
-                        labelText={dataField}
-                        data-testid={dataField}
-                      />
-                    )}
-                  />
-                </ResponsiveWrapper>
-              </Row>
-            ));
-          }
-        })()}
-      </Stack>
-      <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
-        <Button className={styles.button} kind="secondary" onClick={closeForm}>
-          {t('discard', 'Discard')}
-        </Button>
-        <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">
-          {isSubmitting ? (
-            <InlineLoading description={t('sending', 'Sending') + '...'} />
-          ) : (
-            <span>{t('saveAndClose', 'Save and close')}</span>
-          )}
-        </Button>
-      </ButtonSet>
-    </Form>
+                )}
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('maximumRetries', 'Maximum retries')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                <Controller
+                  name="maxRetries"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <NumberInput
+                      {...field}
+                      data-testid="numberOfRetries"
+                      id={field.name}
+                      invalid={!!error?.message}
+                      invalidText={error?.message}
+                      onChange={(_, { value }) => field.onChange(Number(value))}
+                      label={t('numberOfRetries', 'Number of retries')}
+                    />
+                  )}
+                />
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('headerSplitMessage', 'Header split message')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                <Controller
+                  name="splitHeader"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextInput
+                      data-testid="split-header"
+                      invalid={!!error?.message}
+                      invalidText={error?.message}
+                      {...field}
+                      id={field.name}
+                      labelText={t('headerSplitText', 'Header split text')}
+                    />
+                  )}
+                />
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={1}>
+              <span className={styles.columnLabel}>{t('footerSplitMessage', 'Footer split message')}</span>
+            </Column>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                <Controller
+                  name="splitFooter"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <TextInput
+                      {...field}
+                      data-testid="split-footer"
+                      invalid={!!error?.message}
+                      invalidText={error?.message}
+                      id={field.name}
+                      labelText={t('footerSplitText', 'Footers split text')}
+                    />
+                  )}
+                />
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Column sm={3}>
+              <ResponsiveWrapper>
+                <Controller
+                  name="excludeLastFooter"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      data-testid="exclude-last-footer"
+                      id={field.name}
+                      name={field.name}
+                      checked={field.value}
+                      onChange={(_, { checked }) => setValue('excludeLastFooter', checked)}
+                      onBlur={field.onBlur}
+                      className={styles.checkBox}
+                      labelText={t('excludeLastFooter', 'Exclude footer from last split message')}
+                    />
+                  )}
+                />
+              </ResponsiveWrapper>
+            </Column>
+          </Row>
+          <Row className={styles.row}>
+            <Accordion>
+              <AccordionItem title={t('advanced', 'Advanced')}>
+                <Column sm={1}>
+                  <span className={styles.columnLabel}>
+                    {t('automaticResponseScript', 'Automatic response script (Optional)')}
+                  </span>
+                </Column>
+                <Column sm={3}>
+                  <ResponsiveWrapper>
+                    <Controller
+                      name="autoScript"
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <TextArea
+                          {...field}
+                          data-testid="auto-script"
+                          invalid={!!error?.message}
+                          invalidText={error?.message}
+                          labelText={t('writeYourScript', 'Write your script')}
+                          placeholder={t('enterAutomaticScript', 'Enter your script')}
+                        />
+                      )}
+                    />
+                  </ResponsiveWrapper>
+                </Column>
+              </AccordionItem>
+            </Accordion>
+          </Row>
+          {(() => {
+            if (selectedTemplate) {
+              return selectedTemplate.configurables.map((dataField, index) => (
+                <Row className={styles.dynamicRow} key={index}>
+                  <ResponsiveWrapper>
+                    <Controller
+                      name={`dynamicFields.${dataField}`}
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <TextInput
+                          {...field}
+                          invalid={!!error?.message}
+                          invalidText={error?.message}
+                          id={field.name}
+                          labelText={dataField}
+                          data-testid={dataField}
+                        />
+                      )}
+                    />
+                  </ResponsiveWrapper>
+                </Row>
+              ));
+            }
+          })()}
+        </Stack>
+        <ButtonSet className={classnames({ [styles.tablet]: isTablet, [styles.desktop]: !isTablet })}>
+          <Button className={styles.button} kind="secondary" onClick={closeForm}>
+            {t('discard', 'Discard')}
+          </Button>
+          <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">
+            {isSubmitting ? (
+              <InlineLoading description={t('sending', 'Sending') + '...'} />
+            ) : (
+              <span>{t('saveAndClose', 'Save and close')}</span>
+            )}
+          </Button>
+        </ButtonSet>
+      </Form>
+    </Workspace2>
   );
 };
 
