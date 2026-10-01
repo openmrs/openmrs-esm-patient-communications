@@ -46,7 +46,7 @@ const ProvidersListTable = () => {
   const [pageSize, setPageSize] = useState<number>(pageSizes[0]);
   const { providerConfigurations, isLoadingConfigs, error, isValidatingConfigs } = useProviderConfigurations();
 
-  const launchAddProviderConfigForm = useCallback(() => launchWorkspace2('add-provider-config-form'), []);
+  const launchAddProviderConfigForm = useCallback(() => launchWorkspace2('add-provider-config-form', {}), []);
 
   const headers = useMemo(
     () => [
