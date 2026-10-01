@@ -105,6 +105,7 @@ const ProviderConfigTestForm: React.FC<Workspace2DefinitionProps<ProviderConfigT
             kind: 'success',
             autoClose: true,
           });
+          closeWorkspace();
         })
         .catch((errror) =>
           showSnackbar({
@@ -114,7 +115,7 @@ const ProviderConfigTestForm: React.FC<Workspace2DefinitionProps<ProviderConfigT
           }),
         );
     },
-    [providerName, mutateLogs, t],
+    [providerName, mutateLogs, t, closeWorkspace],
   );
 
   return (

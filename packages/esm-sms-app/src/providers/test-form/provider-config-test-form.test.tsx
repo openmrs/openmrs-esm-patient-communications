@@ -1,11 +1,12 @@
 import React from 'react';
 import { type Mock } from 'vitest';
 import type * as Zod from 'zod';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { renderWithSwr } from 'tools';
 import ConfigTestForm from './provider-config-test-form.workspace';
 import { openmrsFetch } from '@openmrs/esm-framework';
+import { sendTestMessage } from '../../api/providers.resource';
 
 vi.mock('zod', async (importOriginal) => {
   const originalModule = await importOriginal<typeof Zod>();
@@ -47,6 +48,8 @@ vi.mock('../../hooks/useLogs', () => ({
 }));
 
 const mockOpenmrsFetch = openmrsFetch as Mock;
+const mockCloseWorkspace = vi.fn();
+const mockSendTestMessage = vi.mocked(sendTestMessage);
 
 describe('AddProviderConfigForm', () => {
   it('Renders form fields correctly', async () => {
@@ -67,18 +70,24 @@ describe('AddProviderConfigForm', () => {
 
   it('sends a test message', async () => {
     mockOpenmrsFetch.mockReturnValue(mockTestMessageResponse);
+    mockSendTestMessage.mockResolvedValue({});
     const user = userEvent.setup();
     renderConfigTestForm();
     const inputs = getFormInputs();
 
     await fillFormInputs(user, inputs, {
-      deliveryTime: '0',
+      deliveryTime: 'Immediately',
       recipients: '1234567890',
       testMessage: 'Hello world',
     });
 
     const buttons = getFormButtons();
     await user.click(buttons.submitButton);
+
+    expect(mockSendTestMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ config: 'test-provider', recipients: ['1234567890'], message: 'Hello world' }),
+    );
+    await waitFor(() => expect(mockCloseWorkspace).toHaveBeenCalled());
   });
 
   it('should show field errors when invalid data type is provided', async () => {
@@ -98,7 +107,7 @@ function renderConfigTestForm() {
       workspaceProps={{ providerName: 'test-provider' }}
       windowProps={null}
       groupProps={null}
-      closeWorkspace={vi.fn()}
+      closeWorkspace={mockCloseWorkspace}
       launchChildWorkspace={vi.fn()}
       workspaceName="provider-config-test-form"
       windowName="sms-provider-config-test-form-window"
@@ -125,7 +134,7 @@ function getFormButtons() {
 }
 
 async function fillFormInputs(user, inputs, values) {
-  await user.click(inputs.deliveryTimeInput, values.deliveryTime);
+  await user.click(screen.getByRole('radio', { name: values.deliveryTime }));
   await user.type(inputs.recipientsInput, values.recipients);
   await user.type(inputs.testMessageInput, values.testMessage);
 }
