@@ -296,7 +296,7 @@ function ConfigDetails({ config }: { config: ConfigurationTableDataRow }) {
   );
 
   const removeConfigPrompt = useCallback(() => {
-    const close = showModal('remove-config-prompt-modal', {
+    const close = showModal('remove-config-modal', {
       configName: config.name,
       closeDeleteModal: () => {
         close();
