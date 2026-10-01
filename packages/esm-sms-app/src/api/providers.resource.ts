@@ -14,9 +14,10 @@ async function postData(url: string, data = {}, ac = new AbortController()) {
   return response.data;
 }
 
-export async function saveConfig(providerConfig: Array<ProviderConfiguration>) {
+// The backend replaces both the configurations and the default configuration name on every save.
+export async function saveConfig(providerConfig: Array<ProviderConfiguration>, defaultConfigName: string | null) {
   const url = '/ws/sms/configs';
-  return await postData(url, { configs: providerConfig });
+  return await postData(url, { configs: providerConfig, defaultConfigName });
 }
 
 export async function uploadConfigTemplate(file: File) {

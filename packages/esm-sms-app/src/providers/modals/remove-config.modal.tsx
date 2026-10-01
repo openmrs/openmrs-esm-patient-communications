@@ -12,14 +12,14 @@ interface RemoveConfigModalProps {
 
 const RemoveConfigModal: React.FC<RemoveConfigModalProps> = ({ closeDeleteModal, configName }) => {
   const { t } = useTranslation();
-  const { mutateConfigs, providerConfigurations } = useProviderConfigurations();
+  const { mutateConfigs, providerConfigurations, defaultConfig } = useProviderConfigurations();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = useCallback(async () => {
     const newConfigs = providerConfigurations.filter((config) => config.name !== configName);
     setIsDeleting(true);
 
-    await saveConfig(newConfigs)
+    await saveConfig(newConfigs, defaultConfig === configName ? null : defaultConfig)
       .then(() => {
         mutateConfigs();
         closeDeleteModal();
@@ -37,7 +37,7 @@ const RemoveConfigModal: React.FC<RemoveConfigModalProps> = ({ closeDeleteModal,
           subtitle: error?.message,
         });
       });
-  }, [closeDeleteModal, configName, mutateConfigs, providerConfigurations, t]);
+  }, [closeDeleteModal, configName, defaultConfig, mutateConfigs, providerConfigurations, t]);
 
   return (
     <div>

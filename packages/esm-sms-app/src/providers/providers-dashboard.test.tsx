@@ -3,7 +3,7 @@ import { type Mock } from 'vitest';
 import { screen, fireEvent } from '@testing-library/react';
 import ProvidersDashboard from './providers-dashboard.component';
 import { useTranslation } from 'react-i18next';
-import { showModal, useWorkspaces } from '@openmrs/esm-framework';
+import { showModal } from '@openmrs/esm-framework';
 import { useProviderConfigTemplates } from '../hooks/useProviderConfigTemplates';
 import { renderWithSwr } from 'tools';
 
@@ -37,11 +37,9 @@ describe('ProvidersDashboard', () => {
   const mockShowModal = showModal as Mock;
   const mockUseProviderConfigTemplates = useProviderConfigTemplates as Mock;
   const mockUseTranslation = useTranslation as Mock;
-  const mockUseworkspaces = useWorkspaces as Mock;
 
   beforeEach(() => {
     mockUseTranslation.mockReturnValue({ t: (_key: string, value: string) => value });
-    mockUseworkspaces.mockReturnValue({ active: false });
     mockUseProviderConfigTemplates.mockReturnValue({ mutateTemplates: vi.fn() });
   });
 

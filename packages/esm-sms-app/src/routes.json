@@ -10,16 +10,32 @@
       "offline": true
     }
   ],
-  "workspaces": [
+  "workspaceGroups2": [
+    {
+      "name": "sms-provider-settings-group",
+      "scopePattern": "^/provider-settings"
+    }
+  ],
+  "workspaceWindows2": [
+    {
+      "name": "sms-provider-config-form-window",
+      "group": "sms-provider-settings-group"
+    },
+    {
+      "name": "sms-provider-config-test-form-window",
+      "group": "sms-provider-settings-group"
+    }
+  ],
+  "workspaces2": [
     {
       "name": "add-provider-config-form",
       "component": "addProviderConfigForm",
-      "title": "addProviderConfigWorkspaceTitle"
+      "window": "sms-provider-config-form-window"
     },
     {
       "name": "provider-config-test-form",
       "component": "providerConfigTestForm",
-      "title": "providerConfigTestWorkspaceTitle"
+      "window": "sms-provider-config-test-form-window"
     }
   ],
   "pages": [

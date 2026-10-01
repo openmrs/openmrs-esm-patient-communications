@@ -26,7 +26,7 @@ import {
   useLayoutType,
   isDesktop as isDesktopLayout,
   showModal,
-  launchWorkspace,
+  launchWorkspace2,
   CardHeader,
   ErrorState,
 } from '@openmrs/esm-framework';
@@ -46,7 +46,7 @@ const ProvidersListTable = () => {
   const [pageSize, setPageSize] = useState<number>(pageSizes[0]);
   const { providerConfigurations, isLoadingConfigs, error, isValidatingConfigs } = useProviderConfigurations();
 
-  const launchAddProviderConfigForm = useCallback(() => launchWorkspace('add-provider-config-form'), []);
+  const launchAddProviderConfigForm = useCallback(() => launchWorkspace2('add-provider-config-form', {}), []);
 
   const headers = useMemo(
     () => [
@@ -276,7 +276,7 @@ function ConfigDetails({ config }: { config: ConfigurationTableDataRow }) {
   const state = useMemo(() => ({ providerName: config.name, ...config }), [config]);
 
   const launchEditProviderConfigForm = useCallback(() => {
-    launchWorkspace('add-provider-config-form', {
+    launchWorkspace2('add-provider-config-form', {
       workspaceTitle: t('editConfig', 'Edit {{ configName }}', {
         configName: config.name,
       }),
@@ -286,7 +286,7 @@ function ConfigDetails({ config }: { config: ConfigurationTableDataRow }) {
 
   const launchConfigTestForm = useCallback(
     () =>
-      launchWorkspace('provider-config-test-form', {
+      launchWorkspace2('provider-config-test-form', {
         workspaceTitle: t('testConfig', 'Test {{ configName }}', {
           configName: config.name,
         }),
@@ -296,7 +296,7 @@ function ConfigDetails({ config }: { config: ConfigurationTableDataRow }) {
   );
 
   const removeConfigPrompt = useCallback(() => {
-    const close = showModal('remove-config-prompt-modal', {
+    const close = showModal('remove-config-modal', {
       configName: config.name,
       closeDeleteModal: () => {
         close();

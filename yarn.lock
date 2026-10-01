@@ -3310,7 +3310,7 @@ __metadata:
     lodash-es: "npm:^4.17.15"
     webpack: "npm:^5.74.0"
   peerDependencies:
-    "@openmrs/esm-framework": 5.x
+    "@openmrs/esm-framework": 10.x
     dayjs: 1.x
     react: ^18.1.0
     react-dom: ^18.1.0
