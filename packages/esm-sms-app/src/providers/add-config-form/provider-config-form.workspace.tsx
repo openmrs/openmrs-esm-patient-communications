@@ -112,7 +112,14 @@ const AddProviderConfigForm: React.FC<Workspace2DefinitionProps<AddProviderConfi
       name: providerName,
     };
 
-    await saveConfig([...providerConfigurations, payload as ProviderConfiguration])
+    // When editing, replace the configuration being edited instead of adding a copy of it.
+    const editedIndex = providerConfigurations.findIndex((config) => config.name === workspaceProps?.providerName);
+    const configs =
+      editedIndex >= 0
+        ? providerConfigurations.map((config, index) => (index === editedIndex ? payload : config))
+        : [...providerConfigurations, payload];
+
+    await saveConfig(configs as Array<ProviderConfiguration>)
       .then(() => {
         showSnackbar({
           title: t('configSaved', 'Configuration saved'),

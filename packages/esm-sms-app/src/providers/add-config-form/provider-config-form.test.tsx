@@ -25,10 +25,12 @@ vi.mock('zod', async (importOriginal) => {
   return mockedZod;
 });
 
+const mockProviderConfigurations = vi.hoisted(() => ({ current: [] }));
+
 vi.mock('../../hooks/useProviderConfigurations', () => ({
   useProviderConfigurations: () => ({
     mutateConfigs: vi.fn(),
-    providerConfigurations: [],
+    providerConfigurations: mockProviderConfigurations.current,
   }),
 }));
 
@@ -60,6 +62,10 @@ vi.mock('@openmrs/esm-framework', () => ({
 const mockSaveConfig = saveConfig as Mock;
 
 describe('AddProviderConfigForm', () => {
+  beforeEach(() => {
+    mockProviderConfigurations.current = [];
+  });
+
   it('Renders form fields correctly', async () => {
     renderAddProviderConfigForm();
     const inputs = getFormInputs();
@@ -128,6 +134,24 @@ describe('AddProviderConfigForm', () => {
     });
   });
 
+  it('replaces the edited configuration instead of adding a copy of it', async () => {
+    const twilio = { ...mockConfig, name: 'Twilio' };
+    const plivo = { ...mockConfig, name: 'Plivo', templateName: 'Plivo' };
+    mockProviderConfigurations.current = [twilio, plivo];
+    mockSaveConfig.mockResolvedValue({});
+    const user = userEvent.setup();
+    renderAddProviderConfigForm({ ...twilio, providerName: 'Twilio' });
+
+    await user.clear(screen.getByTestId('split-header'));
+    await user.type(screen.getByTestId('split-header'), 'Part $m of $t');
+    await user.click(getFormButtons().submitButton);
+
+    const [savedConfigs] = mockSaveConfig.mock.calls[0];
+    expect(savedConfigs).toHaveLength(2);
+    expect(savedConfigs[0]).toEqual(expect.objectContaining({ name: 'Twilio', splitHeader: 'Part $m of $t' }));
+    expect(savedConfigs[1]).toBe(plivo);
+  });
+
   it('should show field errors when invalid data type is provided', async () => {
     const user = userEvent.setup();
     renderAddProviderConfigForm();
@@ -156,10 +180,10 @@ describe('AddProviderConfigForm', () => {
   });
 });
 
-function renderAddProviderConfigForm() {
+function renderAddProviderConfigForm(workspaceProps = null) {
   return renderWithSwr(
     <AddProviderConfigForm
-      workspaceProps={null}
+      workspaceProps={workspaceProps}
       windowProps={null}
       groupProps={null}
       closeWorkspace={vi.fn()}
